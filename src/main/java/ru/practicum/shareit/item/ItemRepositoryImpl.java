@@ -7,7 +7,10 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.util.NumberGenerator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,7 +35,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<Item> getAll(Long userId) {
-        return new ArrayList<>(itemMap.values()).stream().filter(i -> Objects.equals(i.getOwner().getId(), userId))
+        return new ArrayList<>(itemMap.values()).stream().filter(i -> i.getOwner().getId().equals(userId))
                 .collect(Collectors.toList());
     }
 
@@ -52,7 +55,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Item upgrade(Long userId, Item item, Long itemId) {
-        if (itemMap.get(itemId).getOwner().getId() == userId) {
+        if (itemMap.get(itemId).getOwner().getId().equals(userId)) {
             upgrade(item, itemId);
             return itemMap.get(itemId);
         } else throw new IncorrectOwnerException();
