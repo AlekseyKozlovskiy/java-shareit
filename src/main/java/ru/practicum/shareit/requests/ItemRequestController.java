@@ -3,7 +3,6 @@ package ru.practicum.shareit.requests;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.ItemService;
 
 import javax.validation.Valid;
 
@@ -24,7 +23,7 @@ public class ItemRequestController {
 
     @DeleteMapping("/{requestId}")
     void deleteItemRequest(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
-                                     @PathVariable("requestId") Long requestId) {
+                           @PathVariable("requestId") Long requestId) {
         itemRequestService.delete(userId, requestId);
     }
 }

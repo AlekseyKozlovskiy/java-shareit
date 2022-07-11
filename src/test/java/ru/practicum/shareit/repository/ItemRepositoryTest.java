@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ItemRepositoryTest extends ShareItTests {
     private final UserRepository userRepository;
@@ -35,7 +34,7 @@ public class ItemRepositoryTest extends ShareItTests {
 
 
     @Test
-    public void getTest(){
+    public void getTest() {
         userRepository.add(user);
         itemRepository.add(user.getId(), item);
         assertEquals("itemName", itemRepository.get(item.getId()).getName());

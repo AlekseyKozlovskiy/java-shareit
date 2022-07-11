@@ -41,6 +41,7 @@ public class UserRepositoryTest extends ShareItTests {
         assertEquals("name", userRepository.get(user.getId()).getName());
         assertEquals(2, userRepository.getAll().size());
     }
+
     @Test
     public void delete() {
         userRepository.add(user);

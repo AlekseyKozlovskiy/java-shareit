@@ -3,8 +3,6 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.requests.ItemRequest;
 
 import javax.validation.Valid;
 

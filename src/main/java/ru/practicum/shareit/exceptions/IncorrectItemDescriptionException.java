@@ -1,4 +1,4 @@
 package ru.practicum.shareit.exceptions;
 
-public class IncorrectItemDescriptionException extends RuntimeException{
+public class IncorrectItemDescriptionException extends RuntimeException {
 }

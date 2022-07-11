@@ -18,7 +18,7 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity add(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
-                                   @RequestBody Item item) {
+                              @RequestBody Item item) {
         return ResponseEntity.ok(ItemMapper.toItemDto(itemService.addNewItem(userId, item)));
     }
 
@@ -36,7 +36,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity getAll(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId){
+    public ResponseEntity getAll(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         return ResponseEntity.ok(itemService.getAll(userId));
     }
 

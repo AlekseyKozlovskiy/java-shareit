@@ -11,7 +11,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleIncorrectHeaderException(IncorrectHeaderException e) {
         return new ErrorResponse(
-                "Ошибка в заголовке") ;
+                "Ошибка в заголовке");
     }
 
     @ExceptionHandler
@@ -33,6 +33,7 @@ public class ErrorHandler {
     public ErrorResponse handleIncorrectItemNameException(IncorrectItemNameException e) {
         return new ErrorResponse("У вещи должно быть название");
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIncorrectItemDescriptionException(IncorrectItemDescriptionException e) {

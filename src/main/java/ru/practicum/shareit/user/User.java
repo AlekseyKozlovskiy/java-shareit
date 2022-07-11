@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user;
 
 import lombok.*;
-import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;

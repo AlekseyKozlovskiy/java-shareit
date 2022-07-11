@@ -18,16 +18,14 @@ public class UserServiceImpl implements UserService {
         if (userValidation.validEmail(user)) {
             return userRepository.add(user);
 
-        }
-        else throw new ValidationException("Данные не верны");
+        } else throw new ValidationException("Данные не верны");
     }
 
     @Override
     public User update(Long id, User user) {
         if (userValidation.validEmail(user)) {
             return userRepository.upgrade(id, user);
-        }
-        else throw new ValidationException("Данные не верны");
+        } else throw new ValidationException("Данные не верны");
     }
 
     @Override

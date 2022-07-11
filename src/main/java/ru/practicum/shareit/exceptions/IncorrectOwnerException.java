@@ -1,4 +1,4 @@
 package ru.practicum.shareit.exceptions;
 
-public class IncorrectOwnerException extends RuntimeException{
+public class IncorrectOwnerException extends RuntimeException {
 }

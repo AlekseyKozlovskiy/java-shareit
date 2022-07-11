@@ -25,7 +25,7 @@ public class ItemRequestRepositoryImpl implements ItemRequestRepository {
 
     @Override
     public void delete(Long userId, Long requestId) {
-        if (itemRequestMap.get(requestId).getRequestor().getId() == userId){
+        if (itemRequestMap.get(requestId).getRequestor().getId() == userId) {
             itemRequestMap.remove(requestId);
         } else {
             throw new IncorrectUserException(userId);

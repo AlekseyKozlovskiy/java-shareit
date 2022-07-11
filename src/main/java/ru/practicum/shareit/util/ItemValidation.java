@@ -24,9 +24,10 @@ public class ItemValidation {
         }
         return true;
     }
+
     public Boolean chekItemToBooking(Long itemId) {
         if (itemRepository.getItemMap().containsKey(itemId)
-            && itemRepository.get(itemId).getAvailable()){
+                && itemRepository.get(itemId).getAvailable()) {
             return true;
         } else {
             throw new IncorrectItemIdException();
