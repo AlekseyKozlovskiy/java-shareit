@@ -7,10 +7,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.util.NumberGenerator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -35,7 +32,8 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<Item> getAll(Long userId) {
-        return new ArrayList<>(itemMap.values()).stream().filter(i -> i.getOwner().getId() == userId).collect(Collectors.toList());
+        return new ArrayList<>(itemMap.values()).stream().filter(i -> Objects.equals(i.getOwner().getId(), userId))
+                .collect(Collectors.toList());
     }
 
     @Override
