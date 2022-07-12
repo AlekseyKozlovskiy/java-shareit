@@ -20,7 +20,7 @@ public class ItemRepositoryTest extends ShareItTests {
         this.itemRepository = itemRepository;
     }
 
-    User user = User.builder().name("name").email("email").build();
+    User user = User.builder().id(1L).name("name").email("email").build();
     Item item = Item.builder().name("itemName").description("description").available(true).owner(user).build();
 
     @Test
