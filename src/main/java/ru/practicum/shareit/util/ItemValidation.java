@@ -2,24 +2,27 @@ package ru.practicum.shareit.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exceptions.*;
+import ru.practicum.shareit.exceptions.IncorrectItemAvailableException;
+import ru.practicum.shareit.exceptions.IncorrectItemDescriptionException;
+import ru.practicum.shareit.exceptions.IncorrectItemIdException;
+import ru.practicum.shareit.exceptions.IncorrectItemNameException;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.ItemDto;
 
 @Component
 @RequiredArgsConstructor
 public class ItemValidation {
     private final ItemRepository itemRepository;
 
-    public Boolean chek(Long userId, Item item) {
+    public Boolean chek(Long userId, ItemDto itemDto) {
 
-        if (item.getName().isBlank()) {
+        if (itemDto.getName().isBlank()) {
             throw new IncorrectItemNameException();
         }
-        if (item.getAvailable() == null) {
+        if (itemDto.getAvailable() == null) {
             throw new IncorrectItemAvailableException();
         }
-        if (item.getDescription() == null) {
+        if (itemDto.getDescription() == null) {
             throw new IncorrectItemDescriptionException();
         }
         return true;

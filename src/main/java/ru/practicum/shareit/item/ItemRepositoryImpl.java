@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.IncorrectOwnerException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.util.NumberGenerator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,8 +21,6 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Item add(Long userId, Item item) {
-        item.setId(NumberGenerator.getItemId());
-        item.setOwner(userRepository.get(userId));
         itemMap.put(item.getId(), item);
         return item;
     }

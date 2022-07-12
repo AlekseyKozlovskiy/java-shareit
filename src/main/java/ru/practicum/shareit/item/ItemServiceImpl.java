@@ -2,9 +2,14 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exceptions.*;
+import ru.practicum.shareit.exceptions.IncorrectOwnerException;
+import ru.practicum.shareit.exceptions.IncorrectUserException;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.util.ItemValidation;
+import ru.practicum.shareit.util.NumberGenerator;
 import ru.practicum.shareit.util.UserValidation;
 
 import java.util.List;
@@ -15,37 +20,43 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final ItemValidation itemValidation;
     private final UserValidation userValidation;
+    private final UserRepository userRepository;
 
     @Override
-    public Item addNewItem(Long userId, Item item) {
+    public ItemDto addNewItem(Long userId, ItemDto itemDto) {
         userValidation.isUserRegister(userId);
-        itemValidation.chek(userId, item);
-        return itemRepository.add(userId, item);
+        itemValidation.chek(userId, itemDto);
+        itemDto.setId(NumberGenerator.getItemId());
+        itemDto.setOwner(UserMapper.toUserDto(userRepository.get(userId)));
+        Item item = ItemMapper.toNewItem(itemDto);
+        return ItemMapper.toItemDto(itemRepository.add(userId, item));
     }
 
     @Override
-    public Item upgradeItem(Long userId, Item item, Long itemId) {
+    public ItemDto upgradeItem(Long userId, ItemDto itemDto, Long itemId) {
         userValidation.isUserRegister(userId);
-        return itemRepository.upgrade(userId, item, itemId);
+        itemDto.setOwner(UserMapper.toUserDto(userRepository.get(userId)));
+        Item item = ItemMapper.toNewItem(itemDto);
+        return ItemMapper.toItemDto(itemRepository.upgrade(userId, item, itemId));
 
     }
 
     @Override
-    public Item get(Long userId, Long itemId) {
+    public ItemDto get(Long userId, Long itemId) {
         if (userValidation.isUserRegister(userId)) {
-            return itemRepository.get(itemId);
+            return ItemMapper.toItemDto(itemRepository.get(itemId));
         } else throw new IncorrectUserException(userId);
     }
 
     @Override
-    public List<Item> getAll(Long userId) {
+    public List<ItemDto> getAll(Long userId) {
         if (userValidation.isUserRegister(userId)) {
-            return itemRepository.getAll(userId);
+            return ItemMapper.toItemDtoList(itemRepository.getAll(userId));
         } else throw new IncorrectOwnerException();
     }
 
     @Override
-    public List<Item> search(String item) {
-        return itemRepository.search(item);
+    public List<ItemDto> search(String item) {
+        return ItemMapper.toItemDtoList(itemRepository.search(item));
     }
 }

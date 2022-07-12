@@ -3,13 +3,11 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * // TODO .
- */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/users")
@@ -18,18 +16,18 @@ public class UserController {
 
 
     @PostMapping
-    ResponseEntity<User> add(@Valid @RequestBody User user) {
-        return ResponseEntity.ok(userService.add(user));
+    ResponseEntity<UserDto> add(@Valid @RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.add(userDto));
     }
 
     @PatchMapping("/{id}")
-    ResponseEntity<User> update(@Valid @PathVariable("id") Long id,
-                                @RequestBody User user) {
-        return ResponseEntity.ok(userService.update(id, user));
+    ResponseEntity<UserDto> update(@Valid @PathVariable("id") Long id,
+                                   @RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.update(id, userDto));
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<User> get(@PathVariable("id") Long id) {
+    ResponseEntity<UserDto> get(@PathVariable("id") Long id) {
         return ResponseEntity.ok(userService.get(id));
     }
 
@@ -39,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping
-    ResponseEntity<List<User>> getAll() {
+    ResponseEntity<List<UserDto>> getAll() {
         return ResponseEntity.ok(userService.getAll());
     }
 

@@ -3,12 +3,10 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.ItemDto;
 
+import java.util.List;
 
-/**
- * // TODO .
- */
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -17,31 +15,31 @@ public class ItemController {
 
 
     @PostMapping
-    public ResponseEntity add(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
-                              @RequestBody Item item) {
-        return ResponseEntity.ok(ItemMapper.toItemDto(itemService.addNewItem(userId, item)));
+    public ResponseEntity<ItemDto> add(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+                                       @RequestBody ItemDto itemDto) {
+        return ResponseEntity.ok(itemService.addNewItem(userId, itemDto));
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity upgrade(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
-                                  @RequestBody Item item,
-                                  @PathVariable("itemId") Long itemId) {
-        return ResponseEntity.ok(itemService.upgradeItem(userId, item, itemId));
+    public ResponseEntity<ItemDto> upgrade(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+                                           @RequestBody ItemDto itemDto,
+                                           @PathVariable("itemId") Long itemId) {
+        return ResponseEntity.ok(itemService.upgradeItem(userId, itemDto, itemId));
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity get(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
-                              @PathVariable("itemId") Long itemId) {
+    public ResponseEntity<ItemDto> get(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+                                       @PathVariable("itemId") Long itemId) {
         return ResponseEntity.ok(itemService.get(userId, itemId));
     }
 
     @GetMapping
-    public ResponseEntity getAll(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
+    public ResponseEntity<List<ItemDto>> getAll(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         return ResponseEntity.ok(itemService.getAll(userId));
     }
 
     @GetMapping("/search")
-    public ResponseEntity search(@RequestParam(name = "text") String text) {
+    public ResponseEntity<List<ItemDto>> search(@RequestParam(name = "text") String text) {
         return ResponseEntity.ok(itemService.search(text));
     }
 }

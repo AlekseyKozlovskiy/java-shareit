@@ -1,17 +1,16 @@
 package ru.practicum.shareit.requests;
 
+import lombok.Builder;
 import lombok.Data;
-import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.User;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
-/**
- * // TODO .
- */
 @Data
-@Component
+@Valid
+@Builder
 public class ItemRequest {
     private Long id;
     @NotBlank

@@ -6,9 +6,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDate;
 
-/**
- * // TODO .
- */
 @Builder
 @Data
 public class ItemRequestDto {

@@ -2,7 +2,6 @@ package ru.practicum.shareit.user;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.util.NumberGenerator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +14,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User add(User user) {
-        user.setId(NumberGenerator.getUserId());
+
         userMap.put(user.getId(), user);
         return user;
     }

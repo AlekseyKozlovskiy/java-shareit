@@ -4,10 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.user.dto.UserDto;
 
-
-/**
- * // TODO .
- */
 @Data
 @Builder
 public class ItemDto {

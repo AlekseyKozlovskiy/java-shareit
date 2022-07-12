@@ -12,4 +12,13 @@ public class ItemRequestMapper {
                 .created(itemRequest.getCreated())
                 .build();
     }
+
+    public static ItemRequest toNewItemRequest(ItemRequestDto itemRequestDto) {
+        return ItemRequest.builder()
+                .id(itemRequestDto.getId())
+                .description(itemRequestDto.getDescription())
+                .requestor(UserMapper.toNewUser(itemRequestDto.getRequestor()))
+                .created(itemRequestDto.getCreated())
+                .build();
+    }
 }

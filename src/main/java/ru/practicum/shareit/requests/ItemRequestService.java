@@ -1,7 +1,9 @@
 package ru.practicum.shareit.requests;
 
+import ru.practicum.shareit.requests.dto.ItemRequestDto;
+
 public interface ItemRequestService {
-    ItemRequest add(Long userId, ItemRequest itemRequest);
+    ItemRequestDto add(Long userId, ItemRequestDto itemRequestDto);
 
     void delete(Long userId, Long requestId);
 }

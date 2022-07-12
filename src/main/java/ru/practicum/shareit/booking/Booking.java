@@ -8,9 +8,6 @@ import ru.practicum.shareit.user.User;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
-/**
- * // TODO .
- */
 @Data
 @Component
 public class Booking {

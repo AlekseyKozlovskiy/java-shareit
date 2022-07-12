@@ -2,6 +2,8 @@ package ru.practicum.shareit.requests;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.requests.dto.ItemRequestDto;
+import ru.practicum.shareit.util.NumberGenerator;
 import ru.practicum.shareit.util.UserValidation;
 
 @Service
@@ -11,9 +13,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final UserValidation userValidation;
 
     @Override
-    public ItemRequest add(Long userId, ItemRequest itemRequest) {
+    public ItemRequestDto add(Long userId, ItemRequestDto itemRequestDto) {
         userValidation.isUserRegister(userId);
-        return itemRequestRepository.add(userId, itemRequest);
+        itemRequestDto.setId(NumberGenerator.getItemRequestId());
+        ItemRequest itemRequest = ItemRequestMapper.toNewItemRequest(itemRequestDto);
+        return ItemRequestMapper.toItemRequestDto(itemRequestRepository.add(userId, itemRequest));
     }
 
     @Override
