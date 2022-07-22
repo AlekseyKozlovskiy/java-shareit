@@ -102,9 +102,15 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handlerIncorrectOwnerBookingException(IncorrectOwnerBookingException e) {
         return new ErrorResponse("Только владелец может поменять статус3");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerIncorrectOwnerBookingException2(IncorrectOwnerBookingExceptions e) {
+        return new ErrorResponse("Только владелец может поменять статус4");
     }
 
     @ExceptionHandler

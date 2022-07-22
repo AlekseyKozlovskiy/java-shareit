@@ -55,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         if (bookingStatus == null) {
-            bookingValidation.isOwnerrrrr(bookingId, userId);
+            bookingValidation.isOwnerr(bookingId, userId);
             booking.setStatus(BookingStatus.APPROVED);
             booking.setApproved(true);
         }
