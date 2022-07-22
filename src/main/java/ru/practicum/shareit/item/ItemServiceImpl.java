@@ -2,6 +2,8 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.comments.Comment;
 import ru.practicum.shareit.comments.CommentDtoNew;
 import ru.practicum.shareit.comments.CommentMapper;
@@ -18,6 +20,7 @@ import ru.practicum.shareit.util.UserValidation;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +33,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingValidation bookingValidation;
     private final CommentRepository commentRepository;
+    private final BookingRepository bookingRepository;
 
     @Transactional
     @Override
@@ -79,8 +83,35 @@ public class ItemServiceImpl implements ItemService {
         if (userValidation.isUserRegister(userId)) {
             List<Item> collect = itemRepository.findAll().stream().filter(item -> item.getOwner().getId()
                     .equals(userId)).collect(Collectors.toList());
-            return ItemMapper.toItemDtoList(collect);
+            List<ItemDto> itemDtos = ItemMapper.toItemDtoList(collect);
+            for (ItemDto item : itemDtos) {
+                List<Booking> bookings = bookingRepository.findByItemId(item.getId());
+                bookings.sort(Comparator.comparing(Booking::getEnd));
+                for (Booking booking : bookings) {
+                    if (booking.getEnd().isBefore(LocalDateTime.now())) {
+                        item.setLastBooking(lastBooking(booking));
+                    }
+                    if (booking.getStart().isAfter(LocalDateTime.now())) {
+                        item.setNextBooking(nextBooking(booking));
+                    }
+                }
+            }
+            return itemDtos;
         } else throw new IncorrectOwnerException();
+    }
+
+    public LastBooking lastBooking(Booking booking) {
+        LastBooking lastBooking = new LastBooking();
+        lastBooking.setId(booking.getId());
+        lastBooking.setBookerId(booking.getBooker().getId());
+        return lastBooking;
+    }
+
+    public NextBooking nextBooking(Booking booking) {
+        NextBooking nextBooking = new NextBooking();
+        nextBooking.setId(booking.getId());
+        nextBooking.setBookerId(booking.getBooker().getId());
+        return nextBooking;
     }
 
     @Override
