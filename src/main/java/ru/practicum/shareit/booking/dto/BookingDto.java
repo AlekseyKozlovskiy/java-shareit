@@ -1,18 +1,29 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.Builder;
+import lombok.Data;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import java.time.LocalDate;
+import javax.validation.Valid;
+import java.time.LocalDateTime;
 
 @Builder
+@Data
+@Valid
 public class BookingDto {
     private Long id;
-    private LocalDate start;
-    private LocalDate end;
-    private ItemDto item;
+    private Long itemId;
+    private LocalDateTime start;
+    private LocalDateTime end;
+
+
     private UserDto booker;
-    private BookingStatus bookingStatus;
+    private BookingStatus status;
+    private Boolean approved;
+    private ItemDto item;
+    private Boolean canceled;
+
+
 }

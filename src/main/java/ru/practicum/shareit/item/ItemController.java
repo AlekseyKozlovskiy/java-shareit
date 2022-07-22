@@ -3,8 +3,10 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.comments.CommentDtoNew;
 import ru.practicum.shareit.item.dto.ItemDto;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -15,7 +17,7 @@ public class ItemController {
 
 
     @PostMapping
-    public ResponseEntity<ItemDto> add(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+    public ResponseEntity<ItemDto> add(@Valid @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
                                        @RequestBody ItemDto itemDto) {
         return ResponseEntity.ok(itemService.addNewItem(userId, itemDto));
     }
@@ -41,5 +43,12 @@ public class ItemController {
     @GetMapping("/search")
     public ResponseEntity<List<ItemDto>> search(@RequestParam(name = "text") String text) {
         return ResponseEntity.ok(itemService.search(text));
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public ResponseEntity<CommentDtoNew> addComment(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+                                                    @RequestBody CommentDtoNew commentDtoNew,
+                                                    @PathVariable("itemId") Long itemId) {
+        return ResponseEntity.ok(itemService.addComment(userId, commentDtoNew, itemId));
     }
 }

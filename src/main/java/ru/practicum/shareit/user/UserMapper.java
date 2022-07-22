@@ -17,10 +17,11 @@ public class UserMapper {
     }
 
     public static User toNewUser(UserDto userDto) {
-        return User.builder().id(userDto.getId())
-                .name(userDto.getName())
-                .email(userDto.getEmail())
-                .build();
+        User user = new User();
+        user.setId(userDto.getId());
+        user.setEmail(userDto.getEmail());
+        user.setName(userDto.getName());
+        return user;
     }
 
     public static List<UserDto> toUserDtoList(List<User> userList) {
