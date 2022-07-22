@@ -2,17 +2,24 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.comments.Comment;
+import ru.practicum.shareit.comments.CommentDtoNew;
+import ru.practicum.shareit.comments.CommentMapper;
+import ru.practicum.shareit.comments.CommentRepository;
 import ru.practicum.shareit.exceptions.IncorrectOwnerException;
-import ru.practicum.shareit.exceptions.IncorrectUserException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.util.BookingValidation;
 import ru.practicum.shareit.util.ItemValidation;
-import ru.practicum.shareit.util.NumberGenerator;
 import ru.practicum.shareit.util.UserValidation;
 
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -21,42 +28,101 @@ public class ItemServiceImpl implements ItemService {
     private final ItemValidation itemValidation;
     private final UserValidation userValidation;
     private final UserRepository userRepository;
+    private final BookingValidation bookingValidation;
+    private final CommentRepository commentRepository;
 
+    @Transactional
     @Override
     public ItemDto addNewItem(Long userId, ItemDto itemDto) {
-        userValidation.isUserRegister(userId);
-        itemValidation.chek(userId, itemDto);
-        itemDto.setId(NumberGenerator.getItemId());
-        itemDto.setOwner(UserMapper.toUserDto(userRepository.get(userId)));
+        itemDto.setOwner(UserMapper.toUserDto(userRepository.getById(userId)));
         Item item = ItemMapper.toNewItem(itemDto);
-        return ItemMapper.toItemDto(itemRepository.add(userId, item));
+        itemValidation.chek(userId, itemDto);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
+    @Transactional
     public ItemDto upgradeItem(Long userId, ItemDto itemDto, Long itemId) {
         userValidation.isUserRegister(userId);
-        itemDto.setOwner(UserMapper.toUserDto(userRepository.get(userId)));
+        itemDto.setOwner(UserMapper.toUserDto(userRepository.getById(userId)));
         Item item = ItemMapper.toNewItem(itemDto);
-        return ItemMapper.toItemDto(itemRepository.upgrade(userId, item, itemId));
+        item.setId(itemId);
+        List<Item> collect = itemRepository.findAll().stream().filter(item1 -> item1.getOwner().getId()
+                .equals(userId)).collect(Collectors.toList());
+        if (collect.stream().anyMatch(item1 -> item1.getId().equals(itemId))) {
+            upgrade(itemDto, item, itemId);
+        } else throw new IncorrectOwnerException();
 
+        itemRepository.save(item);
+        return ItemMapper.toItemDto(item);
     }
 
     @Override
+    @Transactional
     public ItemDto get(Long userId, Long itemId) {
-        if (userValidation.isUserRegister(userId)) {
-            return ItemMapper.toItemDto(itemRepository.get(itemId));
-        } else throw new IncorrectUserException(userId);
+        userValidation.isUserRegister(userId);
+        itemValidation.isItemExist(itemId);
+        ItemDto itemDto = ItemMapper.toItemDto(itemRepository.getById(itemId));
+
+        if (bookingValidation.test(itemId, userId)) {
+            itemDto.setLastBooking(bookingValidation.lastBooking(itemId));
+            itemDto.setNextBooking(bookingValidation.nextBooking(itemId));
+        }
+        itemDto.setComments(CommentMapper.toCommentDtoNewList(commentRepository.findAll()));
+
+        return itemDto;
     }
 
     @Override
+    @Transactional
     public List<ItemDto> getAll(Long userId) {
         if (userValidation.isUserRegister(userId)) {
-            return ItemMapper.toItemDtoList(itemRepository.getAll(userId));
+            List<Item> collect = itemRepository.findAll().stream().filter(item -> item.getOwner().getId()
+                    .equals(userId)).collect(Collectors.toList());
+            return ItemMapper.toItemDtoList(collect);
         } else throw new IncorrectOwnerException();
     }
 
     @Override
+    @Transactional
     public List<ItemDto> search(String item) {
-        return ItemMapper.toItemDtoList(itemRepository.search(item));
+        List<Item> collect = new ArrayList<>();
+        if (item.isBlank()) {
+            return ItemMapper.toItemDtoList(collect);
+        }
+        collect = itemRepository.findAll().stream()
+                .filter(i -> i.getAvailable().equals(true))
+                .filter(i -> i.getName().toLowerCase().contains(item.toLowerCase())
+                        || i.getDescription().toLowerCase().contains(item.toLowerCase()))
+                .collect(Collectors.toList());
+        return ItemMapper.toItemDtoList(collect);
+    }
+
+    void upgrade(ItemDto itemDto, Item item, Long itemId) {
+        if (itemDto.getName() == null) {
+            item.setName(itemRepository.getById(itemId).getName());
+        }
+        if (itemDto.getDescription() == null) {
+            item.setDescription(itemRepository.getById(itemId).getDescription());
+        }
+        if (itemDto.getAvailable() == null) {
+            item.setAvailable(itemRepository.getById(itemId).getAvailable());
+        }
+
+    }
+
+    @Override
+    public CommentDtoNew addComment(Long userId, CommentDtoNew commentDtoNew, Long itemId) {
+        bookingValidation.isCommentAvailable(itemId, userId, commentDtoNew);
+        bookingValidation.test(itemId, userId);
+        commentDtoNew.setItem(ItemMapper.toItemDto(itemRepository.getById(itemId)));
+        commentDtoNew.setUser(UserMapper.toUserDto(userRepository.getById(userId)));
+        commentDtoNew.setCreated(LocalDateTime.now());
+        commentDtoNew.setAuthorName(userRepository.getById(userId).getName());
+
+        Comment comment = CommentMapper.toNewComment(commentDtoNew);
+        Comment save = commentRepository.save(comment);
+        commentDtoNew.setId(save.getId());
+        return commentDtoNew;
     }
 }

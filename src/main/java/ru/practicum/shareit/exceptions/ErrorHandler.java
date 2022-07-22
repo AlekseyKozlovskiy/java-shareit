@@ -48,8 +48,68 @@ public class ErrorHandler {
 
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handlerIncorrectItemIdException(IncorrectItemIdException e) {
         return new ErrorResponse("Нет вещи с таким ID");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handlerIncorrectCoincidenceOfЕTimeException(TryingToBookingSelfItemException e) {
+        return new ErrorResponse("ОШИБКА");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerIncorrectBookingTimeException(IncorrectBookingTimeException e) {
+        return new ErrorResponse("Неверное время");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handlerIncorrectBookingIdException(IncorrectBookingIdException e) {
+        return new ErrorResponse("Неверный ID Booking");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handlerIncorrectMatchesBookingIdAndUserIdException(IncorrectMatchesBookingIdAndUserIdException e) {
+        return new ErrorResponse("Владелец вещи другой пользователь");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerIncorrectBookerException(IncorrectBookerException e) {
+        return new ErrorResponse("Только владелец может менять статус");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerIncorrectItemApprovedException(IncorrectItemApprovedException e) {
+        return new ErrorResponse("Вещь уже подтверждена для бронирования");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handlerIncorrectChangeStatusBookerException(IncorrectChangeStatusBookerException e) {
+        return new ErrorResponse("Только владелец может поменять статус1");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerIncorrectBookerBookingException(IncorrectBookerBookingException e) {
+        return new ErrorResponse("Только владелец может поменять статус2");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerIncorrectOwnerBookingException(IncorrectOwnerBookingException e) {
+        return new ErrorResponse("Только владелец может поменять статус3");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerIncorrectAddCommentException(IncorrectAddCommentException e) {
+        return new ErrorResponse("Вещь не была в аренде");
     }
 }

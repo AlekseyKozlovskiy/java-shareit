@@ -23,13 +23,14 @@ public class ItemMapper {
     }
 
     public static Item toNewItem(ItemDto itemDto) {
-        return Item.builder()
-                .id(itemDto.getId())
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable())
-                .owner(UserMapper.toNewUser(itemDto.getOwner()))
-                .build();
+
+        Item item = new Item();
+        item.setId(itemDto.getId());
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        item.setAvailable(itemDto.getAvailable());
+        item.setOwner(UserMapper.toNewUser(itemDto.getOwner()));
+        return item;
     }
 
     public static List<ItemDto> toItemDtoList(List<Item> itemList) {
@@ -38,5 +39,13 @@ public class ItemMapper {
             itemDtoList.add(ItemMapper.toItemDto(item));
         }
         return itemDtoList;
+    }
+
+    public static ItemDtoNew toLastDto(Item item) {
+        ItemDtoNew itemDtoNew = new ItemDtoNew();
+        itemDtoNew.setId(item.getId());
+        itemDtoNew.setName(itemDtoNew.getName());
+        itemDtoNew.setDescription(itemDtoNew.getDescription());
+        return itemDtoNew;
     }
 }
