@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exceptions.IncorrectHeaderException;
 import ru.practicum.shareit.exceptions.IncorrectUserException;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.dto.UserDto;
 
 @RequiredArgsConstructor
 @Component

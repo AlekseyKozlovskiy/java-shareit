@@ -2,7 +2,6 @@ package ru.practicum.shareit.requests;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.util.NumberGenerator;
 
 import java.util.HashMap;
