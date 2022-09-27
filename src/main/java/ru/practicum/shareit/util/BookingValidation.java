@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.comments.CommentDtoNew;
 import ru.practicum.shareit.exceptions.*;
@@ -12,6 +13,7 @@ import ru.practicum.shareit.item.LastBooking;
 import ru.practicum.shareit.item.NextBooking;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -127,6 +129,16 @@ public class BookingValidation {
                 throw new IncorrectAddCommentException();
             }
         }
+    }
+    public boolean isStateCorrect(String state) {
+        boolean b = Arrays.stream(State.values()).anyMatch(s -> s.toString().equals(state));
+        if (!b){
+            throw new IncorrectStateException();
+        }
+        System.out.println(b);
+        return b;
+
+
     }
 
 }
