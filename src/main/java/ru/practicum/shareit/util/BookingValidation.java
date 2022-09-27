@@ -130,9 +130,10 @@ public class BookingValidation {
             }
         }
     }
+
     public boolean isStateCorrect(String state) {
         boolean b = Arrays.stream(State.values()).anyMatch(s -> s.toString().equals(state));
-        if (!b){
+        if (!b) {
             throw new IncorrectStateException();
         }
         System.out.println(b);
