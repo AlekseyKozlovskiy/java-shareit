@@ -11,9 +11,11 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> getAllByBookerId(Long userId);
 
+    List<Booking> getAllByBookerIdAndStartIsAfterOrderByIdDesc(Long userId, LocalDateTime end);
+
 
     @Query(value = "select * from shareit.bookings as b inner join shareit.items as i on b.item_id = i.id " +
-            "where i.owner_id = ?1", nativeQuery = true)
+            "where i.owner_id = ?1 ORDER BY b.id DESC", nativeQuery = true)
     List<Booking> getAllOfOwner(Long userId);
 
     List<Booking> findByItemId(Long itemId);

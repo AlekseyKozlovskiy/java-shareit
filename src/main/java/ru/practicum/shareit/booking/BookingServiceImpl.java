@@ -80,8 +80,15 @@ public class BookingServiceImpl implements BookingService {
         userValidation.isUserRegister(userId);
         bookingValidation.isStateCorrect(state);
         if (state.equals(State.FUTURE.toString())) {
-            List<Booking> list = bookingRepository.getAllByBookerId(userId).stream().filter(s -> s.getEnd().isAfter(LocalDateTime.now())).collect(Collectors.toList());
-            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+//            List<Booking> list = bookingRepository.getAllByBookerId(userId)
+//                    .stream()
+//                    .filter(s -> s.getEnd().isAfter(LocalDateTime.now()))
+//                    .collect(Collectors.toList());
+
+            List<Booking> list = bookingRepository
+                    .getAllByBookerIdAndStartIsAfterOrderByIdDesc(userId, LocalDateTime.now());
+
+//                    list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.WAITING.toString())) {
