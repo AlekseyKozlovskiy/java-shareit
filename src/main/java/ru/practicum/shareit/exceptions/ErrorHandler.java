@@ -118,6 +118,7 @@ public class ErrorHandler {
     public ErrorResponse handlerIncorrectAddCommentException(IncorrectAddCommentException e) {
         return new ErrorResponse("Вещь не была в аренде");
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handlerIncorrectStateException(IncorrectStateException e) {
