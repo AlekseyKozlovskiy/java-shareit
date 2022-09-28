@@ -92,13 +92,15 @@ public class BookingServiceImpl implements BookingService {
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.WAITING.toString())) {
-            List<Booking> list = bookingRepository.getAllByBookerId(userId).stream().filter(s -> s.getStatus().toString().equals(state)).collect(Collectors.toList());
-            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+//            List<Booking> list = bookingRepository.getAllByBookerId(userId).stream().filter(s -> s.getStatus().toString().equals(state)).collect(Collectors.toList());
+            List<Booking> list = bookingRepository.getAllByBookerIdAndStatusOrderByIdDesc(userId, BookingStatus.WAITING);
+//            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.REJECTED.toString())) {
-            List<Booking> list = bookingRepository.getAllByBookerId(userId).stream().filter(s -> s.getStatus().toString().equals(state)).collect(Collectors.toList());
-            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+//            List<Booking> list = bookingRepository.getAllByBookerId(userId).stream().filter(s -> s.getStatus().toString().equals(state)).collect(Collectors.toList());
+//            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+            List<Booking> list = bookingRepository.getAllByBookerIdAndStatusOrderByIdDesc(userId, BookingStatus.REJECTED);
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.CURRENT.toString())) {
@@ -107,8 +109,10 @@ public class BookingServiceImpl implements BookingService {
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.PAST.toString())) {
-            List<Booking> list = bookingRepository.getAllByBookerId(userId).stream().filter(s -> s.getEnd().isBefore(LocalDateTime.now())).collect(Collectors.toList());
-            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+            List<Booking> list = bookingRepository
+                    .getAllByBookerIdAndEndIsBeforeOrderByIdDesc(userId, LocalDateTime.now());
+//            List<Booking> list = bookingRepository.getAllByBookerId(userId).stream().filter(s -> s.getEnd().isBefore(LocalDateTime.now())).collect(Collectors.toList());
+//            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
             return BookingMapper.toBookingDtoList(list);
         }
         List<Booking> list = bookingRepository.getAllByBookerId(userId);
