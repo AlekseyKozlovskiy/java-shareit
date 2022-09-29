@@ -32,8 +32,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> getAllByOwnerPast(Long userId, LocalDateTime localDateTime);
 
     @Query(value = "select * from shareit.bookings as b inner join shareit.items as i on b.item_id = i.id " +
-            "where i.owner_id = ?1 and b.end_date_time >= ?2 and b.start_date_time <= ?2 ORDER BY b.id DESC"
-            , nativeQuery = true)
+            "where i.owner_id = ?1 and b.end_date_time >= ?2 and b.start_date_time <= ?2 ORDER BY b.id DESC", nativeQuery = true)
     List<Booking> getAllByOwnerCurrent(Long userId, LocalDateTime localDateTime);
 
     List<Booking> findByItemId(Long itemId);
