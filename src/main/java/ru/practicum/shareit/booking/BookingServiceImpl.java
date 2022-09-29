@@ -14,7 +14,6 @@ import ru.practicum.shareit.util.UserValidation;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -104,10 +103,13 @@ public class BookingServiceImpl implements BookingService {
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.CURRENT.toString())) {
-            List<Booking> list = bookingRepository.getAllByBookerId(userId).stream().filter(s -> s.getId() == 4L).collect(Collectors.toList());
-            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+            List<Booking> list = bookingRepository.getAllByBookerIdAndEndIsAfterAndStartIsBefore(userId, LocalDateTime.now(), LocalDateTime.now());
+//            List<Booking> list = bookingRepository.getAllByBookerId(userId).stream().filter(s -> s.getId() == 4L).collect(Collectors.toList());
+//            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
             return BookingMapper.toBookingDtoList(list);
         }
+
+
         if (state.equals(State.PAST.toString())) {
             List<Booking> list = bookingRepository
                     .getAllByBookerIdAndEndIsBeforeOrderByIdDesc(userId, LocalDateTime.now());
