@@ -126,29 +126,38 @@ public class BookingServiceImpl implements BookingService {
         userValidation.isUserRegister(userId);
         bookingValidation.isStateCorrect(state);
         if (state.equals(State.WAITING.toString())) {
-            List<Booking> list = bookingRepository.getAllOfOwner(userId).stream().filter(s -> s.getStatus().toString().equals(state)).collect(Collectors.toList());
-            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+//            List<Booking> list = bookingRepository.getAllOfOwner(userId)
+//                    .stream().filter(s -> s.getStatus().toString().equals(state)).collect(Collectors.toList());
+//            ;
+//            System.out.println(list);
+            List<Booking> list = bookingRepository.getAllOfOwnerAndStatus(userId, BookingStatus.WAITING.toString());
+//            System.out.println(list2);
+//                    .stream().filter(s -> s.getStatus().toString().equals(state)).collect(Collectors.toList());
+//            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.REJECTED.toString())) {
-            List<Booking> list = bookingRepository.getAllOfOwner(userId).stream().filter(s -> s.getStatus().toString().equals(state)).collect(Collectors.toList());
-            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+            List<Booking> list = bookingRepository.getAllOfOwnerAndStatus(userId, BookingStatus.REJECTED.toString());
+//            List<Booking> list = bookingRepository.getAllOfOwner(userId).stream().filter(s -> s.getStatus().toString().equals(state)).collect(Collectors.toList());
+//            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.CURRENT.toString())) {
-            List<Booking> list = bookingRepository.getAllOfOwner(userId).stream().filter(s -> s.getStart().isBefore(LocalDateTime.now()) && s.getEnd()
-                    .isAfter(LocalDateTime.now())).collect(Collectors.toList());
-            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+            List<Booking> list = bookingRepository.getAllByOwnerCurrent(userId, LocalDateTime.now());
+//            List<Booking> list = bookingRepository.getAllOfOwner(userId).stream().filter(s -> s.getStart().isBefore(LocalDateTime.now()) && s.getEnd()
+//                    .isAfter(LocalDateTime.now())).collect(Collectors.toList());
+//            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.PAST.toString())) {
-            List<Booking> list = bookingRepository.getAllOfOwner(userId).stream().filter(s -> s.getEnd().isBefore(LocalDateTime.now())).collect(Collectors.toList());
-            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+            List<Booking> list = bookingRepository.getAllByOwnerPast(userId, LocalDateTime.now());
+//            List<Booking> list = bookingRepository.getAllOfOwner(userId).stream().filter(s -> s.getEnd().isBefore(LocalDateTime.now())).collect(Collectors.toList());
+//            list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
             return BookingMapper.toBookingDtoList(list);
         }
 
         List<Booking> list = bookingRepository.getAllOfOwner(userId);
-        list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+//        list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
         return BookingMapper.toBookingDtoList(list);
     }
 }
