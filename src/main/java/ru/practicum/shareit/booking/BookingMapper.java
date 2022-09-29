@@ -46,6 +46,7 @@ public class BookingMapper {
         }
         return bookingDtoList;
     }
+
     public static BookingDtoCreate toBookingDtoCreate(Booking booking) {
 
         return BookingDtoCreate.builder()
