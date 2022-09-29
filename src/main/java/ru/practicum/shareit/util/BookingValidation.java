@@ -52,7 +52,6 @@ public class BookingValidation {
     }
 
     public Boolean isBookingApproved(Long bookingId) {
-        System.out.println(bookingRepository.getById(bookingId).getApproved());
         if (bookingRepository.getById(bookingId).getApproved()) {
             throw new IncorrectItemApprovedException();
         }
@@ -136,7 +135,6 @@ public class BookingValidation {
         if (!b) {
             throw new IncorrectStateException();
         }
-        System.out.println(b);
         return b;
 
 

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoCreate;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -15,8 +16,8 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    ResponseEntity<BookingDto> addItemRequest(@Valid @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
-                                              @RequestBody BookingDto bookingDto) {
+    ResponseEntity<BookingDtoCreate> addItemRequest(@Valid @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+                                                    @RequestBody BookingDto bookingDto) {
         return ResponseEntity.ok(bookingService.add(userId, bookingDto));
     }
 
@@ -30,7 +31,6 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     ResponseEntity<BookingDto> get(@Valid @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
                                    @PathVariable("bookingId") Long bookingId) {
-        System.out.println("!!!!!!");
         return ResponseEntity.ok(bookingService.get(userId, bookingId));
     }
 
@@ -38,7 +38,6 @@ public class BookingController {
     ResponseEntity<List<BookingDto>> getAll(@Valid @RequestHeader(value = "X-Sharer-User-Id", required = false)
                                             Long userId,
                                             @RequestParam(required = false, defaultValue = "ALL") String state) {
-        System.out.println(state);
         return ResponseEntity.ok(bookingService.getAll(userId, state));
     }
 
