@@ -59,9 +59,6 @@ public class BookingServiceImpl implements BookingService {
         }
         if (bookingStatus == null) {
             throw new IncorrectApprovedParameterException();
-//            bookingValidation.isOwnerr(bookingId, userId);
-//            booking.setStatus(BookingStatus.APPROVED);
-//            booking.setApproved(true);
         }
         bookingRepository.save(booking);
 
