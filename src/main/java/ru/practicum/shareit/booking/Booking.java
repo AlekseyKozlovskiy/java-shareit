@@ -25,7 +25,7 @@ public class Booking {
     @Column(name = "end_date_time")
     private LocalDateTime end;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
 
