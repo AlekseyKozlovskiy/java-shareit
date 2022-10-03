@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoCreate;
+import ru.practicum.shareit.exceptions.IncorrectApprovedParameterException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.UserMapper;
@@ -45,7 +46,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.getById(bookingId);
 
         if (bookingStatus != null) {
-            bookingValidation.isOwnerrrrr(bookingId, userId);
+            bookingValidation.isOwner(bookingId, userId);
             if (bookingStatus) {
                 bookingValidation.isBookingApproved(bookingId);
                 booking.setStatus(BookingStatus.APPROVED);
@@ -57,9 +58,10 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         if (bookingStatus == null) {
-            bookingValidation.isOwnerr(bookingId, userId);
-            booking.setStatus(BookingStatus.APPROVED);
-            booking.setApproved(true);
+            throw new IncorrectApprovedParameterException();
+//            bookingValidation.isOwnerr(bookingId, userId);
+//            booking.setStatus(BookingStatus.APPROVED);
+//            booking.setApproved(true);
         }
         bookingRepository.save(booking);
 

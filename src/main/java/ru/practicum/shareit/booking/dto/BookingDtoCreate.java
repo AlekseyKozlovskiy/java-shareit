@@ -1,13 +1,12 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.Builder;
-import lombok.Data;
-
-import javax.validation.Valid;
+import lombok.Getter;
+import lombok.Setter;
 
 @Builder
-@Data
-@Valid
+@Setter
+@Getter
 public class BookingDtoCreate {
     private Long id;
 }

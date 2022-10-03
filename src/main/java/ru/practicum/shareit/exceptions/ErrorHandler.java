@@ -109,8 +109,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handlerIncorrectOwnerBookingException2(IncorrectOwnerBookingExceptions e) {
-        return new ErrorResponse("Только владелец может поменять статус4");
+    public ErrorResponse handlerIncorrectApprovedParameterException(IncorrectApprovedParameterException e) {
+        return new ErrorResponse("Не указан параметр approved");
     }
 
     @ExceptionHandler

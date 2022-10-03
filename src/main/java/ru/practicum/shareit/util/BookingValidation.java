@@ -58,7 +58,7 @@ public class BookingValidation {
         return true;
     }
 
-    public Boolean isOwnerrrrr(Long bookingId, Long userId) {
+    public Boolean isOwner(Long bookingId, Long userId) {
         if (!bookingRepository.getById(bookingId).getItem().getOwner().getId().equals(userId)) {
             throw new IncorrectOwnerBookingException();
         }
@@ -67,7 +67,7 @@ public class BookingValidation {
 
     public Boolean isOwnerr(Long bookingId, Long userId) {
         if (!bookingRepository.getById(bookingId).getItem().getOwner().getId().equals(userId)) {
-            throw new IncorrectOwnerBookingExceptions();
+            throw new IncorrectApprovedParameterException();
         }
         return true;
     }
