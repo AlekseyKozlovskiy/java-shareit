@@ -2,10 +2,7 @@ package ru.practicum.shareit.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exceptions.IncorrectItemAvailableException;
-import ru.practicum.shareit.exceptions.IncorrectItemDescriptionException;
-import ru.practicum.shareit.exceptions.IncorrectItemIdException;
-import ru.practicum.shareit.exceptions.IncorrectItemNameException;
+import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 
@@ -28,13 +25,25 @@ public class ItemValidation {
         return true;
     }
 
-    public Boolean chekItemToBooking(Long itemId) {
-        if (itemRepository.getItemMap().containsKey(itemId)
-                && itemRepository.get(itemId).getAvailable()) {
-            return true;
-        } else {
+    public void isItemExist(Long itemId) {
+        if (itemId == null) {
+            throw new IncorrectHeaderException();
+        }
+        boolean t = itemRepository.findAll().stream().anyMatch(item -> item.getId().equals(itemId));
+        if (!t) {
             throw new IncorrectItemIdException();
         }
+    }
+
+
+    public Boolean isItemAvailable(Long itemId) {
+        if (itemRepository.findAll().stream().noneMatch(item -> item.getId().equals(itemId))) {
+            throw new IncorrectItemIdException();
+        }
+        if (!itemRepository.getById(itemId).getAvailable()) {
+            throw new IncorrectItemAvailableException();
+        }
+        return true;
     }
 
 }
