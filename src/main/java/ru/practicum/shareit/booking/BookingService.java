@@ -7,7 +7,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoCreate;
 import java.util.List;
 
 public interface BookingService {
-    BookingDtoCreate add(Long userId, BookingDto bookingDto);
+    BookingDto add(Long userId, BookingDto bookingDto);
 
     BookingDto upgrade(Long userId, Long bookingId, Boolean bookingStatus);
 

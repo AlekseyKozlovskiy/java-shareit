@@ -31,7 +31,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingDtoCreate add(Long userId, BookingDto bookingDto) {
+    public BookingDto add(Long userId, BookingDto bookingDto) {
         userValidation.isUserRegister(userId);
         itemValidation.isItemAvailable(bookingDto.getItemId());
         bookingValidation.isBookingValid(bookingDto);
@@ -40,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
         bookingDto.setItem(ItemMapper.toItemDto(itemRepository.getById(bookingDto.getItemId())));
         bookingDto.setStatus(BookingStatus.WAITING);
         Booking booking = BookingMapper.toNewBooking(bookingDto);
-        return BookingMapper.toBookingDtoCreate(bookingRepository.save(booking));
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
