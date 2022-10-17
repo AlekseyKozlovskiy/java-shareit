@@ -11,6 +11,8 @@ import ru.practicum.shareit.comments.CommentRepository;
 import ru.practicum.shareit.exceptions.IncorrectOwnerException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.requests.ItemRequest;
+import ru.practicum.shareit.requests.ItemRequestRepository;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.util.BookingValidation;
@@ -34,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingValidation bookingValidation;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Transactional
     @Override
@@ -41,7 +44,19 @@ public class ItemServiceImpl implements ItemService {
         itemDto.setOwner(UserMapper.toUserDto(userRepository.getById(userId)));
         Item item = ItemMapper.toNewItem(itemDto);
         itemValidation.chek(userId, itemDto);
-        return ItemMapper.toItemDto(itemRepository.save(item));
+
+        List<ItemRequest> all = itemRequestRepository.findAll();
+        for (ItemRequest itemRequest : all) {
+            String stroka = itemDto.getName().replaceAll(" ", "").toLowerCase().substring(0, 3);
+            String zapros = itemRequest.getDescription().replaceAll(" ", "").toLowerCase();
+            if (zapros.contains(stroka)) {
+                itemDto.setRequestId(itemRequest.getId());
+            }
+        }
+        itemRepository.save(item);
+        itemDto.setId(item.getId());
+
+        return itemDto;
     }
 
     @Override

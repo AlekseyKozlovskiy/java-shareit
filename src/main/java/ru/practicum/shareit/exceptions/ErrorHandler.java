@@ -124,4 +124,24 @@ public class ErrorHandler {
     public ErrorResponse handlerIncorrectStateException(IncorrectStateException e) {
         return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS");
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerIncorrectItemRequestDescription(IncorrectItemRequestDescription e) {
+        return new ErrorResponse("Description is empty");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerIncorrectParametrException(IncorrectParameterException e) {
+        return new ErrorResponse("Wrong parameter");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handlerIncorrectItemRequestIdException(IncorrectItemRequestIdException e) {
+        return new ErrorResponse("Wrong item request id");
+    }
+
+
 }

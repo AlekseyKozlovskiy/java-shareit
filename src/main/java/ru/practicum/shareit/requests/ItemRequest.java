@@ -6,8 +6,8 @@ import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
+import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -20,7 +20,7 @@ public class ItemRequest {
     private Long id;
 
 
-    @NotBlank
+    @NotEmpty
     @Column(name = "description", nullable = false)
     private String description;
 
@@ -28,7 +28,6 @@ public class ItemRequest {
     @JoinColumn(name = "requester_id")
     private User requester;
 
-    @NotBlank
     @Column(name = "created", nullable = false)
-    private LocalDate created;
+    private LocalDateTime created;
 }

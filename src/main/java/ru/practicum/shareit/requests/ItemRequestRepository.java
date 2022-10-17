@@ -1,7 +1,20 @@
 package ru.practicum.shareit.requests;
 
-public interface ItemRequestRepository {
-    ItemRequest add(Long userId, ItemRequest itemRequest);
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Component;
 
-    void delete(Long userId, Long requestId);
+import java.util.List;
+
+@Component
+public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
+    List<ItemRequest> getAllByRequester_Id(Long userId);
+
+    //    List<ItemRequest> getAllBy_Id(Long userId);
+    @Query(value = "select * from SHAREIT.ITEM_REQUESTS as ir " +
+            "inner join SHAREIT.ITEMS I on ir.ID = I.REQUEST_ID " +
+            "where I.ID =?1 ORDER BY ir.ID DESC ", nativeQuery = true)
+    List<ItemRequest> ggg(Long userId);
+
+
 }

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -12,8 +11,11 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Valid
 @Entity
+@Builder
 @Table(name = "users", schema = "shareit")
-
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,13 +29,4 @@ public class User {
     @NotBlank
     @Column(name = "email")
     String email;
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }

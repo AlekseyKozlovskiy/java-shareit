@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import ru.practicum.shareit.requests.ItemRequest;
 import ru.practicum.shareit.user.User;
 
@@ -13,6 +12,9 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Valid
 @Entity
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "items", schema = "shareit")
 public class Item {
 

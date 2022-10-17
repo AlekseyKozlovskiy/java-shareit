@@ -1,16 +1,21 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/users")
+@Validated
 public class UserController {
     private final UserService userService;
 
@@ -27,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<UserDto> get(@PathVariable("id") Long id) {
+    ResponseEntity<UserDto> getById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(userService.get(id));
     }
 
@@ -37,8 +42,11 @@ public class UserController {
     }
 
     @GetMapping
-    ResponseEntity<List<UserDto>> getAll() {
-        return ResponseEntity.ok(userService.getAll());
+    ResponseEntity<List<UserDto>> getAll(@PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                         @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        int page = from / size;
+        final PageRequest pageRequest = PageRequest.of(page, size);
+        return ResponseEntity.ok(userService.getAll(pageRequest));
     }
 
 }
