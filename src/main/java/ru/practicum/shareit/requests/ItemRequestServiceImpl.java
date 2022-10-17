@@ -16,6 +16,7 @@ import ru.practicum.shareit.util.UserValidation;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -97,7 +98,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         }
         for (ItemRequestDto itemRequestDto : i) {
             for (ItemDto item : itemRequestDto.getItems()) {
-                if (item.getOwner().getId() == userId) {
+                if (Objects.equals(item.getOwner().getId(), userId)) {
                     test.add(itemRequestDto);
                 }
             }
