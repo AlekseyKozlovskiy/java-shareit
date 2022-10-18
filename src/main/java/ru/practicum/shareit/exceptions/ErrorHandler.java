@@ -10,35 +10,21 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleIncorrectHeaderException(IncorrectHeaderException e) {
-        return new ErrorResponse(
-                "Ошибка в заголовке");
+        return new ErrorResponse("Ошибка в заголовке");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleIncorrectUserException(IncorrectUserException e) {
-        return new ErrorResponse(
-                String.format("Пользователя с ID: \"%s\" не существует .", e.getHeader())
-        );
+        return new ErrorResponse(String.format("Пользователя с ID: \"%s\" не существует .", e.getHeader()));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIncorrectItemAvailableException(IncorrectItemAvailableException e) {
-        return new ErrorResponse("У вещи должен быть статус аренды");
+    public ErrorResponse IncorrectItemValidException(IncorrectItemValidException e) {
+        return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIncorrectItemNameException(IncorrectItemNameException e) {
-        return new ErrorResponse("У вещи должно быть название");
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIncorrectItemDescriptionException(IncorrectItemDescriptionException e) {
-        return new ErrorResponse("У вещи должно быть описание");
-    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
