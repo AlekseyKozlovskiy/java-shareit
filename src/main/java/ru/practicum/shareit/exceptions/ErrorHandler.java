@@ -45,11 +45,11 @@ public class ErrorHandler {
         return new ErrorResponse("ОШИБКА");
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handlerIncorrectBookingTimeException(IncorrectBookingTimeException e) {
-        return new ErrorResponse("Неверное время");
-    }
+//    @ExceptionHandler
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ErrorResponse handlerIncorrectBookingTimeException(IncorrectBookingTimeException e) {
+//        return new ErrorResponse("Неверное время");
+//    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)

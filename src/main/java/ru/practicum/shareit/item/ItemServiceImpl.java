@@ -104,29 +104,15 @@ public class ItemServiceImpl implements ItemService {
                 bookings.sort(Comparator.comparing(Booking::getEnd));
                 for (Booking booking : bookings) {
                     if (booking.getEnd().isBefore(LocalDateTime.now())) {
-                        item.setLastBooking(lastBooking(booking));
+                        item.setLastBooking(bookingValidation.lastBooking(item.getId()));
                     }
                     if (booking.getStart().isAfter(LocalDateTime.now())) {
-                        item.setNextBooking(nextBooking(booking));
+                        item.setNextBooking(bookingValidation.nextBooking(item.getId()));
                     }
                 }
             }
             return itemDtos;
         } else throw new IncorrectOwnerException();
-    }
-
-    public LastBooking lastBooking(Booking booking) {
-        LastBooking lastBooking = new LastBooking();
-        lastBooking.setId(booking.getId());
-        lastBooking.setBookerId(booking.getBooker().getId());
-        return lastBooking;
-    }
-
-    public NextBooking nextBooking(Booking booking) {
-        NextBooking nextBooking = new NextBooking();
-        nextBooking.setId(booking.getId());
-        nextBooking.setBookerId(booking.getBooker().getId());
-        return nextBooking;
     }
 
     @Override

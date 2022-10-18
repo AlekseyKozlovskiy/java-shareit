@@ -30,7 +30,7 @@ public class BookingValidation {
         if (bookingDto.getEnd().isBefore(LocalDateTime.now())
                 || bookingDto.getStart().isBefore(LocalDateTime.now())
                 || bookingDto.getEnd().isBefore(bookingDto.getStart())) {
-            throw new IncorrectBookingTimeException();
+            throw new IncorrectItemValidException("wrong time");
         }
         return true;
     }

@@ -22,6 +22,7 @@ public class BookingController {
     @PostMapping
     ResponseEntity<BookingDto> addItemRequest(@Valid @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
                                               @RequestBody BookingDto bookingDto) {
+        System.out.println("SSSS");
         return ResponseEntity.ok(bookingService.add(userId, bookingDto));
     }
 
