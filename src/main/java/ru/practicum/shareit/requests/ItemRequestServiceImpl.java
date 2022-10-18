@@ -82,7 +82,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         }
         List<ItemDto> all = ItemMapper.toItemDtoList(itemRepository.findAll());
         List<ItemRequestDto> i = ItemRequestMapper.itemRequestDtoList(itemRequestRepository.findAll());
-//        List<ItemRequestDto> allByRequester_id = ItemRequestMapper.itemRequestDtoList(itemRequestRepository.getAllByRequester_Id(userId));
         List<ItemRequestDto> test = new ArrayList<>();
         for (ItemRequestDto itemRequest : i) {
             List<ItemDto> list = new ArrayList<>();
