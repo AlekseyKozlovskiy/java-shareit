@@ -21,7 +21,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse IncorrectItemValidException(IncorrectItemValidException e) {
+    public ErrorResponse handleIncorrectItemValidException(IncorrectItemValidException e) {
         return new ErrorResponse(e.getMessage());
     }
 
