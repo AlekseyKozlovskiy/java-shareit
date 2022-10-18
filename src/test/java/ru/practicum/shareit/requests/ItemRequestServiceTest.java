@@ -22,7 +22,6 @@ class ItemRequestServiceTest extends ShareItTests {
     private final UserService userService;
     private User user = new User(1L, "Simple User", "user@mail.ru");
     private ItemRequest itemRequest = new ItemRequest(1L, "text", user, LocalDateTime.now());
-//    private ExternalRequestDto externalRequestDto = new ExternalRequestDto();
 
     @Autowired
     public ItemRequestServiceTest(
@@ -33,7 +32,6 @@ class ItemRequestServiceTest extends ShareItTests {
         this.itemRequestService = itemRequestService;
         this.userService = userService;
         userService.add(UserMapper.toUserDto(user));
-//        userService.createUserDto(UserMapper.toUserDto(user));
         itemRequestRepository.save(itemRequest);
     }
 
@@ -51,8 +49,7 @@ class ItemRequestServiceTest extends ShareItTests {
     @Test
     void get() {
         List<ItemRequestDto> itemRequestDtos = itemRequestService.get(user.getId());
-        assertEquals(itemRequestDtos.get(0).getRequestor()
-                , ItemRequestMapper.toItemRequestDto(itemRequest).getRequestor());
+        assertEquals(itemRequestDtos.get(0).getRequestor(), ItemRequestMapper.toItemRequestDto(itemRequest).getRequestor());
     }
 
     @Test
