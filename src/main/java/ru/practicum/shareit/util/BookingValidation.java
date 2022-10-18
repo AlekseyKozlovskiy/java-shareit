@@ -74,35 +74,29 @@ public class BookingValidation {
     }
 
     public LastBooking lastBooking(Long itemId) {
-        List<Booking> byItemId = bookingRepository.findByItemId(itemId);
+        Booking booking1 = bookingRepository.getFirstByItemIdOrderByStartAsc(itemId);
         LastBooking lastBooking = new LastBooking();
-        Booking booking = null;
-        try {
-            booking = byItemId.get(0);
-        } catch (IndexOutOfBoundsException e) {
+        if (booking1 == null) {
             lastBooking.setId(null);
             lastBooking.setBookerId(null);
             return lastBooking;
         }
-        lastBooking.setId(booking.getId());
-        lastBooking.setBookerId(booking.getBooker().getId());
+        lastBooking.setId(booking1.getId());
+        lastBooking.setBookerId(booking1.getBooker().getId());
         return lastBooking;
     }
 
     public NextBooking nextBooking(Long itemId) {
-        List<Booking> byItemId = bookingRepository.findByItemId(itemId);
-
+        Booking booking1 = bookingRepository.getFirstByItemIdOrderByEndDesc(itemId);
         NextBooking nextBooking = new NextBooking();
-        Booking booking = null;
-        try {
-            booking = byItemId.get(1);
-        } catch (IndexOutOfBoundsException e) {
+
+        if (booking1 == null) {
             nextBooking.setId(null);
             nextBooking.setBookerId(null);
             return nextBooking;
         }
-        nextBooking.setId(booking.getId());
-        nextBooking.setBookerId(booking.getBooker().getId());
+        nextBooking.setId(booking1.getId());
+        nextBooking.setBookerId(booking1.getBooker().getId());
         return nextBooking;
     }
 

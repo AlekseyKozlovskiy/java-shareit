@@ -3,32 +3,45 @@ package ru.practicum.shareit.booking;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.util.BookingDtoCreater;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ru.practicum.shareit.item.ItemControllerTest.asJsonString;
 
-@WebMvcTest(BookingController.class)
-@AutoConfigureMockMvc
+@WebMvcTest(controllers = BookingController.class)
+//@AutoConfigureMockMvc
 class BookingControllerTest {
 
-    @MockBean
-    BookingService bookingService;
 
     @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
     MockMvc mockMvc;
+    @MockBean
+    BookingService bookingService;
+    private User user = new User(1L, "Simple User", "user@mail.ru");
+    private User user2 = new User(2L, "Another User", "test@mail.ru");
+    private Item item = new Item(1L, "item name", "Super unit", true, user, null);
+    private Booking booking = new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusHours(2L),
+            item, user2, BookingStatus.WAITING, true, false);
 
     @Test
     void addItemRequest() throws Exception {
@@ -42,37 +55,62 @@ class BookingControllerTest {
     }
 
 
-    public static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public static String asJsonString(final Object obj) {
+//        try {
+//            return new ObjectMapper().writeValueAsString(obj);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     @Test
     void upgradeNewItem() throws Exception {
-        var bookingDto = BookingDtoCreater.getBookingDto();
 
-        when(bookingService.upgrade(1L, 1L, true)).thenReturn(bookingDto);
-        mockMvc.perform(patch(URI.create("/bookings/1"))
-                        .content(asJsonString(bookingDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+//        var bookingDto = BookingDtoCreater.getBookingDto();
+//
+//        when(bookingService.upgrade(1L, 1L, true)).thenReturn(bookingDto);
+//        mockMvc.perform(patch(URI.create("/bookings/1"))
+//                        .content(asJsonString(bookingDto))
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk()).andReturn();
+        booking.setStatus(BookingStatus.APPROVED);
+        Booking booking1 = booking;
+        BookingDto bookingDto = BookingMapper.toBookingDto(booking1);
+        when(bookingService.upgrade(anyLong(), anyLong(), anyBoolean())).thenReturn(bookingDto);
+        mockMvc.perform(patch("/bookings/{bookingId}", booking.getId())
+                        .param("approved", "true")
+                        .header("X-Sharer-User-Id", user.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(notNullValue())))
+                .andExpect(jsonPath("$.status", is(BookingStatus.APPROVED.toString())));
     }
 
     @Test
     void get2() throws Exception {
         var bookingDto = BookingDtoCreater.getBookingDto();
+        System.out.println(bookingDto);
+        when(bookingService.get(anyLong(), anyLong(), anyLong(), anyLong())).thenReturn(bookingDto);
+        mockMvc.perform(get(URI.create("/bookings/1"))
+                        .param("from", "1")
+                        .param("size", "1")
+                        .header("X-Sharer-User-Id", user.getId()))
 
-        when(bookingService.get(1L, 1L, 1L, 1L)).thenReturn(bookingDto);
-        String url = String.format("/bookings/%d", bookingDto.getId());
-        MvcResult mvcResult = mockMvc.perform(get(url))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(notNullValue())))
+                .andExpect(jsonPath("$.item.name", is(booking.getItem().getName())));
 
-        verify(bookingService, times(1))
-                .get(null, 1L, null, null);
+//                .andExpect(status().isOk());
+//
+//        verify(bookingService, times(1))
+//                .get(null, 1L, null, null);
+//        String url = String.format("/bookings/%d", bookingDto.getId());
+//        when(bookingService.get(anyLong(), anyLong(), anyLong(), anyLong())).thenReturn(bookingDto);
+//        mockMvc.perform(get(url, bookingDto.getId()))
+////                        .header("X-Sharer-User-Id", user.getId()))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.id", is(notNullValue())))
+//                .andExpect(jsonPath("$.item.name", is(bookingDto.getItem().getName())));
     }
 
     @Test

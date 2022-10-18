@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ItemController.class)
 @AutoConfigureMockMvc
+public
 class ItemControllerTest {
     @MockBean
     ItemService itemService;

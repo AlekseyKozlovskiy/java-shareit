@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking;
 
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.item.LastBooking;
+import ru.practicum.shareit.item.NextBooking;
 
 import java.util.List;
 
@@ -15,4 +17,8 @@ public interface BookingService {
     List<BookingDto> getAll(Long userId, String state, PageRequest pageRequest);
 
     List<BookingDto> getAllOfOwner(Long userId, String state, PageRequest pageRequest);
+
+    LastBooking lastBooking(Long itemId);
+
+    NextBooking nextBooking(Long itemId);
 }

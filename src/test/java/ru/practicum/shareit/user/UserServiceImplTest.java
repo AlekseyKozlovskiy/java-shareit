@@ -1,73 +1,63 @@
 package ru.practicum.shareit.user;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.ShareItTests;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.util.UserDtoCreater;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
-//@WebMvcTest(UserServiceImpl.class)
-class UserServiceImplTest extends ShareItTests {
-    //    @MockBean
-    @Autowired
-    UserService userService;
-    @Autowired
-    UserMapper userMapper;
-    @MockBean
-    UserRepository userRepository;
-//    @MockBean
-//    private UserValidation userValidation;
-//    private User user;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-//    @BeforeEach
-//    void beforeEach() {
-//        userRepository = Mockito.mock(UserRepository.class);
-//        userService = new UserServiceImpl(userRepository , userValidation);
-//        user = new User(1L, "user 1", "user1@email");
-//    }
+@Transactional
+class UserServiceImplTest extends ShareItTests {
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
+    static User user = new User(1L, "Simple User", "user@mail.ru");
+    static User user2 = new User(2L, "Another User", "test@mail.ru");
+
+    @Autowired
+    public UserServiceImplTest(UserRepository userRepository, UserService userService) {
+        this.userRepository = userRepository;
+        userRepository.save(user);
+        userRepository.save(user2);
+        this.userService = userService;
+    }
 
     @Test
     void add() {
-        UserDto userDto = UserDtoCreater.getUserDto();
-        User user = userMapper.toNewUser(userDto);
-        Mockito.when(userRepository.save(user)).thenReturn(user);
-        UserDto add = userService.add(userDto);
-        Assertions.assertTrue(add.getId() == 1L);
+        UserDto user1 = UserMapper.toUserDto((user));
+        assertEquals(userRepository.findById(user1.getId()).orElse(null), user);
     }
 
     @Test
     void upgrade() {
+        UserDto userDto = UserMapper.toUserDto((user));
+        userDto.setName("New Name");
+        userService.upgrade(1L, userDto);
+        assertEquals(userRepository.findById(1L).orElse(null), UserMapper.toNewUser(userDto));
     }
 
     @Test
     void get() {
-        UserDto userDto = UserDtoCreater.getUserDto();
-        User user = userMapper.toNewUser(userDto);
-        Mockito.when(userRepository.getById(1L)).thenReturn(user);
-        Mockito.when(userRepository.findAll()).thenReturn(List.of(user));
-        UserDto userDto1 = userService.get(1L);
-        Assertions.assertEquals(userDto, userDto1);
+        assertEquals(UserMapper.toUserDto(user), userService.get(1L));
     }
 
     @Test
-    void delete() {
+    void deleteUser() {
+        userService.delete(user.getId());
+        assertNull(userRepository.findById(user.getId()).orElse(null));
     }
 
     @Test
     void getAll() {
-//        final PageImpl<User> userPage = new PageImpl<>(Collections.singletonList(user));
-//        when(userRepository.findAll(PageRequest.ofSize(10)))
-//                .thenReturn(userPage);
-//
-//        final List<UserDto> userDtos = userService.getAll(PageRequest.ofSize(10));
-//
-//        assertNotNull(userDtos);
-//        assertEquals(1, userDtos.size());
-//        assertEquals(user, userDtos.get(0));
+        assertEquals(List.of(UserMapper.toUserDto(user),
+                UserMapper.toUserDto(user2)), userService.getAll(PageRequest.ofSize(10)));
     }
 }

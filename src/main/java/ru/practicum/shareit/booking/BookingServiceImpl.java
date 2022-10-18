@@ -7,6 +7,8 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.exceptions.IncorrectApprovedParameterException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.LastBooking;
+import ru.practicum.shareit.item.NextBooking;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.util.BookingValidation;
@@ -140,5 +142,34 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> list = bookingRepository.getAllOfOwner(userId, pageRequeste);
         return BookingMapper.toBookingDtoList(list);
+    }
+
+    @Override
+    public LastBooking lastBooking(Long itemId) {
+        Booking booking1 = bookingRepository.getFirstByItemIdOrderByStartAsc(itemId);
+        LastBooking lastBooking = new LastBooking();
+        if (booking1 == null) {
+            lastBooking.setId(null);
+            lastBooking.setBookerId(null);
+            return lastBooking;
+        }
+        lastBooking.setId(booking1.getId());
+        lastBooking.setBookerId(booking1.getBooker().getId());
+        return lastBooking;
+    }
+
+    @Override
+    public NextBooking nextBooking(Long itemId) {
+        Booking booking1 = bookingRepository.getFirstByItemIdOrderByEndDesc(itemId);
+        NextBooking nextBooking = new NextBooking();
+
+        if (booking1 == null) {
+            nextBooking.setId(null);
+            nextBooking.setBookerId(null);
+            return nextBooking;
+        }
+        nextBooking.setId(booking1.getId());
+        nextBooking.setBookerId(booking1.getBooker().getId());
+        return nextBooking;
     }
 }

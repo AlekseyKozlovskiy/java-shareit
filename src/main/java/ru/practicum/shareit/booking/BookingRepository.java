@@ -11,6 +11,10 @@ import java.util.List;
 
 @Component
 public interface BookingRepository extends JpaRepository<Booking, Long> {
+    Booking getFirstByItemIdOrderByEndDesc(Long itemId);
+
+    Booking getFirstByItemIdOrderByStartAsc(Long itemId);
+
     List<Booking> getAllByBookerIdOrderByIdDesc(Long userId, Pageable pageable);
 
     List<Booking> getAllByBookerIdAndStartIsAfterOrderByIdDesc(Long userId, LocalDateTime end);

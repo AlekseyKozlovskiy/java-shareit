@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.*;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.comments.CommentDtoNew;
 import ru.practicum.shareit.item.LastBooking;
 import ru.practicum.shareit.item.NextBooking;
@@ -16,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Component
 public class ItemDto {
     private Long id;
     private String name;
