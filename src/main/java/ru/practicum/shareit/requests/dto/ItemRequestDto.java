@@ -12,7 +12,6 @@ import java.util.List;
 @Setter
 @Getter
 @Valid
-@EqualsAndHashCode
 public class ItemRequestDto {
     private Long id;
     private String description;
@@ -20,15 +19,6 @@ public class ItemRequestDto {
     private LocalDateTime created;
     private List<ItemDto> items;
 
-    @Override
-    public String toString() {
-        return "ItemRequestDto{" +
-                "id=" + id +
-                ", description='" + description + '\'' +
-                ", requestor=" + requestor +
-                ", created=" + created +
-                '}';
-    }
 }
 
 

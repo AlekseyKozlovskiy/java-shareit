@@ -7,7 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.ShareItTests;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.exceptions.*;
+import ru.practicum.shareit.exceptions.IncorrectRequest;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.UserService;
@@ -129,18 +130,6 @@ class BookingServiceTest extends ShareItTests {
         final BookingDto bookingDto1 = bookingService.add(booker.getId(), newBookingDto);
         bookingDto1.setStatus(BookingStatus.WAITING);
         assertEquals(List.of(bookingDto1), bookingService.getAll(booker.getId(), "WAITING", PageRequest.ofSize(10)));
-//        User user = new User(2L, "name", "email@email.com");
-//        ItemRequest itemRequest = new ItemRequest(1L, "desc", user, LocalDateTime.now());
-//        Item item = new Item(1L, "na", "de", true, user, itemRequest);
-//
-//        Booking booking = new Booking();
-//                repository.save(new Booking(1L, LocalDateTime.now().minusDays(1).withNano(0),
-//                LocalDateTime.now().plusDays(1).withNano(0), item, user, BookingStatus.APPROVED));
-//
-//        BookingDto dto = BookingMapper.toBookingDto(booking);
-//        assertNotNull(bookingService.get(user.getId(), 1L, 1L, 10L));
-//        assertEquals(1, bookingService.getAllFromUser(user.getId(), "CURRENT", 0, 10).size());
-//        assertEquals(List.of(dto), bookingService.getAllFromUser(user.getId(), "CURRENT", 0, 10));
     }
 
     @Test
@@ -171,5 +160,21 @@ class BookingServiceTest extends ShareItTests {
     void getAllForItemsInvalid() {
         assertThrows(IncorrectRequest.class, () -> bookingService.getAll(5L, "ALL", PageRequest.ofSize(10)));
         assertThrows(ValidationException.class, () -> bookingService.getAll(owner.getId(), "BLA", PageRequest.ofSize(10)));
+    }
+
+    @Test
+    void tryToBookingSelfItem() {
+        newBookingDto = BookingDto.builder()
+                .id(1L)
+                .itemId(1L)
+                .start(LocalDateTime.now().plusMinutes(1))
+                .end(LocalDateTime.now().plusMinutes(2))
+                .booker(owner)
+                .status(BookingStatus.WAITING)
+                .approved(false)
+                .item(itemDto)
+                .canceled(false)
+                .build();
+        assertThrows(IncorrectRequest.class, () -> bookingService.add(owner.getId(), newBookingDto));
     }
 }

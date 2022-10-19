@@ -4,10 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.ShareItTests;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserMapper;
-import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.transaction.Transactional;
@@ -36,14 +32,19 @@ class UserServiceImplTest extends ShareItTests {
 
     @Test
     void add() {
-        UserDto user1 = UserMapper.toUserDto((user));
+        UserDto user1 = UserDto.builder().id(1L).name("Simple User").email("user@mail.ru").build();
         assertEquals(userRepository.findById(user1.getId()).orElse(null), user);
     }
 
     @Test
     void upgrade() {
         UserDto userDto = UserMapper.toUserDto((user));
+        userDto.setName(null);
+        userDto.setEmail(null);
+        userService.upgrade(1L, userDto);
+        assertEquals(userRepository.findById(1L).orElse(null), UserMapper.toNewUser(userDto));
         userDto.setName("New Name");
+        userDto.setEmail("em@em.ru");
         userService.upgrade(1L, userDto);
         assertEquals(userRepository.findById(1L).orElse(null), UserMapper.toNewUser(userDto));
     }
@@ -61,7 +62,8 @@ class UserServiceImplTest extends ShareItTests {
 
     @Test
     void getAll() {
+        List<UserDto> all = userService.getAll(PageRequest.ofSize(10));
         assertEquals(List.of(UserMapper.toUserDto(user),
-                UserMapper.toUserDto(user2)), userService.getAll(PageRequest.ofSize(10)));
+                UserMapper.toUserDto(user2)), all);
     }
 }

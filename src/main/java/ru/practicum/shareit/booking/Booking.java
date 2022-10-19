@@ -47,17 +47,4 @@ public class Booking {
     @Column(name = "canceled")
     private Boolean canceled = false;
 
-    @Override
-    public String toString() {
-        return "Booking{" +
-                "id=" + id +
-                ", start=" + start +
-                ", end=" + end +
-                ", item=" + item +
-                ", booker=" + booker +
-                ", status=" + status +
-                ", approved=" + approved +
-                ", canceled=" + canceled +
-                '}';
-    }
 }

@@ -95,6 +95,7 @@ class ItemServiceTest extends ShareItTests {
         final UserDto userDto = userService.add(user1);
         final ItemDto itemDto = itemService.addNewItem(userDto.getId(), item1);
         final ItemDto itemDto2 = itemService.addNewItem(userDto.getId(), item2);
+        List<ItemDto> all = itemService.getAll(userDto.getId());
         assertEquals(2, itemService.getAll(userDto.getId()).size());
     }
 

@@ -7,7 +7,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.util.UserValidation;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,9 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAll(PageRequest pageRequest) {
-        return userRepository.findAll(pageRequest)
-                .stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
+        List<User> users = userRepository.findAll();
+        return UserMapper.toUserDtoList(users);
     }
 }
