@@ -1,9 +1,13 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.requests.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.ShareItTests;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.transaction.Transactional;

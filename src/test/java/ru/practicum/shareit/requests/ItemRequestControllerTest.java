@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@WebMvcTest(ItemRequestController.class)
 @AutoConfigureMockMvc
 class ItemRequestControllerTest extends ShareItTests {
 
@@ -38,11 +37,9 @@ class ItemRequestControllerTest extends ShareItTests {
     private User user = new User(1L, "Simple User", "user@mail.ru");
     private ItemRequest itemRequest = new ItemRequest(1L, "text", user, LocalDateTime.now());
 
-    //    private ItemRequestDto itemRequestDto = new ItemRequestDto();
     @Test
     void addItemRequest() throws Exception {
         ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
-//        externalRequestDto.setDescription(itemRequest.getDescription());
         when(itemRequestService.add(anyLong(), any()))
                 .thenReturn(ItemRequestMapper.toItemRequestDto(itemRequest));
         mockMvc.perform(post("/requests")

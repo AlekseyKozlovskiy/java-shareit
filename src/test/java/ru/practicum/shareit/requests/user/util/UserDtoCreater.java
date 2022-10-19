@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.util;
+package ru.practicum.shareit.requests.user.util;
 
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
