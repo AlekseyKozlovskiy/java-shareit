@@ -2,9 +2,8 @@ package ru.practicum.shareit.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exceptions.IncorrectHeaderException;
-import ru.practicum.shareit.exceptions.IncorrectItemIdException;
-import ru.practicum.shareit.exceptions.IncorrectItemValidException;
+import ru.practicum.shareit.exceptions.IncorrectRequest;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 
@@ -16,34 +15,34 @@ public class ItemValidation {
     public Boolean chek(Long userId, ItemDto itemDto) {
 
         if (itemDto.getName().isBlank()) {
-            throw new IncorrectItemValidException("wrong name");
+            throw new ValidationException("wrong name");
         }
         if (itemDto.getAvailable() == null) {
-            throw new IncorrectItemValidException("wrong available");
+            throw new ValidationException("wrong available");
         }
         if (itemDto.getDescription() == null) {
-            throw new IncorrectItemValidException("wrong description");
+            throw new ValidationException("wrong description");
         }
         return true;
     }
 
     public void isItemExist(Long itemId) {
         if (itemId == null) {
-            throw new IncorrectHeaderException();
+            throw new ValidationException("Ошибка в заголовке");
         }
         boolean t = itemRepository.findAll().stream().anyMatch(item -> item.getId().equals(itemId));
         if (!t) {
-            throw new IncorrectItemIdException();
+            throw new IncorrectRequest("Нет вещи с таким ID");
         }
     }
 
 
     public Boolean isItemAvailable(Long itemId) {
         if (itemRepository.findAll().stream().noneMatch(item -> item.getId().equals(itemId))) {
-            throw new IncorrectItemIdException();
+            throw new IncorrectRequest("Нет вещи с таким ID");
         }
         if (!itemRepository.getById(itemId).getAvailable()) {
-            throw new IncorrectItemValidException("wrong available");
+            throw new ValidationException("wrong available");
         }
         return true;
     }

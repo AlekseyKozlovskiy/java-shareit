@@ -8,7 +8,7 @@ import ru.practicum.shareit.comments.Comment;
 import ru.practicum.shareit.comments.CommentDtoNew;
 import ru.practicum.shareit.comments.CommentMapper;
 import ru.practicum.shareit.comments.CommentRepository;
-import ru.practicum.shareit.exceptions.IncorrectOwnerException;
+import ru.practicum.shareit.exceptions.IncorrectRequest;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.requests.ItemRequest;
@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
                 .equals(userId)).collect(Collectors.toList());
         if (collect.stream().anyMatch(item1 -> item1.getId().equals(itemId))) {
             upgrade(itemDto, item, itemId);
-        } else throw new IncorrectOwnerException();
+        } else throw new IncorrectRequest("У пользователя нет такой вещи");
 
         itemRepository.save(item);
         return ItemMapper.toItemDto(item);
@@ -112,7 +112,7 @@ public class ItemServiceImpl implements ItemService {
                 }
             }
             return itemDtos;
-        } else throw new IncorrectOwnerException();
+        } else throw new IncorrectRequest("У пользователя нет такой вещи");
     }
 
     @Override

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.exceptions.IncorrectApprovedParameterException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.LastBooking;
@@ -61,7 +61,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         if (bookingStatus == null) {
-            throw new IncorrectApprovedParameterException();
+            throw new ValidationException("Не указан параметр approved");
         }
         bookingRepository.save(booking);
 
@@ -112,7 +112,6 @@ public class BookingServiceImpl implements BookingService {
             return BookingMapper.toBookingDtoList(list);
         }
         List<Booking> list = bookingRepository.getAllByBookerIdOrderByIdDesc(userId, pageRequest);
-//        list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
 
         return BookingMapper.toBookingDtoList(list);
     }

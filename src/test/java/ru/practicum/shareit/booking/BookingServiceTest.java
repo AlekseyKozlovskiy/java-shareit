@@ -74,18 +74,18 @@ class BookingServiceTest extends ShareItTests {
     void addNewBookingInvalid() {
         itemDto.setAvailable(false);
         itemService.upgradeItem(owner.getId(), itemDto, itemDto.getId());
-        assertThrows(IncorrectItemValidException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 bookingService.add(booker.getId(), newBookingDto));
-        assertThrows(IncorrectItemValidException.class, () -> bookingService.add(
+        assertThrows(ValidationException.class, () -> bookingService.add(
                 booker.getId(), newBookingDto.toBuilder().start(LocalDateTime.now().minusDays(2)).build()));
-        assertThrows(IncorrectItemValidException.class, () -> bookingService.add(
+        assertThrows(ValidationException.class, () -> bookingService.add(
                 booker.getId(), newBookingDto.toBuilder().start(LocalDateTime.now().plusDays(2))
                         .end(LocalDateTime.now().plusDays(1)).build()));
-        assertThrows(IncorrectUserException.class, () -> bookingService.add(10L, newBookingDto));
-        assertThrows(IncorrectItemIdException.class, () -> bookingService.add(
+        assertThrows(IncorrectRequest.class, () -> bookingService.add(10L, newBookingDto));
+        assertThrows(IncorrectRequest.class, () -> bookingService.add(
                 booker.getId(), newBookingDto.toBuilder().itemId(5L).build()));
         itemService.upgradeItem(owner.getId(), itemDto.toBuilder().available(false).build(), 1L);
-        assertThrows(IncorrectItemValidException.class, () -> bookingService.add(booker.getId(), newBookingDto));
+        assertThrows(ValidationException.class, () -> bookingService.add(booker.getId(), newBookingDto));
     }
 
     @Test
@@ -98,10 +98,10 @@ class BookingServiceTest extends ShareItTests {
     @Test
     void updateBookingInvalid() {
         bookingService.add(booker.getId(), newBookingDto);
-        assertThrows(IncorrectApprovedParameterException.class, () -> bookingService.upgrade(owner.getId(), newBookingDto.getId(),
+        assertThrows(ValidationException.class, () -> bookingService.upgrade(owner.getId(), newBookingDto.getId(),
                 null));
         assertThrows(EntityNotFoundException.class, () -> bookingService.upgrade(owner.getId(), 5L, true));
-        assertThrows(IncorrectOwnerBookingException.class, () -> bookingService.upgrade(5L,
+        assertThrows(IncorrectRequest.class, () -> bookingService.upgrade(5L,
                 newBookingDto.getId(), true));
     }
 
@@ -114,8 +114,8 @@ class BookingServiceTest extends ShareItTests {
 
     @Test
     void findBookingInvalid() {
-        assertThrows(IncorrectUserException.class, () -> bookingService.get(5L, newBookingDto.getId(), 1L, 10L));
-        assertThrows(IncorrectBookingIdException.class, () -> bookingService.get(booker.getId(), 5L, 1L, 10L));
+        assertThrows(IncorrectRequest.class, () -> bookingService.get(5L, newBookingDto.getId(), 1L, 10L));
+        assertThrows(IncorrectRequest.class, () -> bookingService.get(booker.getId(), 5L, 1L, 10L));
     }
 
     @Test
@@ -169,7 +169,7 @@ class BookingServiceTest extends ShareItTests {
 
     @Test
     void getAllForItemsInvalid() {
-        assertThrows(IncorrectUserException.class, () -> bookingService.getAll(5L, "ALL", PageRequest.ofSize(10)));
-        assertThrows(IncorrectStateException.class, () -> bookingService.getAll(owner.getId(), "BLA", PageRequest.ofSize(10)));
+        assertThrows(IncorrectRequest.class, () -> bookingService.getAll(5L, "ALL", PageRequest.ofSize(10)));
+        assertThrows(ValidationException.class, () -> bookingService.getAll(owner.getId(), "BLA", PageRequest.ofSize(10)));
     }
 }

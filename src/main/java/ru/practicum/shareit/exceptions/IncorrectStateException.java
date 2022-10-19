@@ -1,5 +1,5 @@
-package ru.practicum.shareit.exceptions;
-
-public class IncorrectStateException extends RuntimeException{
-
-}
+//package ru.practicum.shareit.exceptions;
+//
+//public class IncorrectStateException extends RuntimeException{
+//
+//}

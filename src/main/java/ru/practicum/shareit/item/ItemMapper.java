@@ -40,12 +40,4 @@ public class ItemMapper {
         }
         return itemDtoList;
     }
-
-    public static ItemDtoNew toLastDto(Item item) {
-        ItemDtoNew itemDtoNew = new ItemDtoNew();
-        itemDtoNew.setId(item.getId());
-        itemDtoNew.setName(itemDtoNew.getName());
-        itemDtoNew.setDescription(itemDtoNew.getDescription());
-        return itemDtoNew;
-    }
 }

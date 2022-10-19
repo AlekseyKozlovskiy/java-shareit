@@ -1,4 +1,4 @@
-package ru.practicum.shareit.exceptions;
-
-public class IncorrectApprovedParameterException extends RuntimeException {
-}
+//package ru.practicum.shareit.exceptions;
+//
+//public class IncorrectApprovedParameterException extends RuntimeException {
+//}
