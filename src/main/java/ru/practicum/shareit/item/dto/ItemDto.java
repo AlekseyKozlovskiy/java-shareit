@@ -10,7 +10,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
 
-@Builder
+@Builder(toBuilder = true)
 @Setter
 @Getter
 @NoArgsConstructor

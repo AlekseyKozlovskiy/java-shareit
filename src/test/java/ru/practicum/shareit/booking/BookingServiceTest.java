@@ -7,6 +7,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.ShareItTests;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.exceptions.IncorrectItemIdException;
+import ru.practicum.shareit.exceptions.IncorrectItemValidException;
+import ru.practicum.shareit.exceptions.IncorrectUserException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.UserService;
@@ -16,8 +19,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -67,6 +69,24 @@ class BookingServiceTest extends ShareItTests {
         bookingService.add(booker.getId(), newBookingDto);
         assertNotNull(repository.findById(newBookingDto.getId()).orElseThrow());
         assertEquals(repository.findById(newBookingDto.getId()).orElseThrow().getEnd(), newBookingDto.getEnd());
+    }
+
+    @Test
+    void addNewBookingInvalid() {
+        itemDto.setAvailable(false);
+        itemService.upgradeItem(owner.getId(), itemDto, itemDto.getId());
+        assertThrows(IncorrectItemValidException.class, () ->
+                bookingService.add(booker.getId(), newBookingDto));
+        assertThrows(IncorrectItemValidException.class, () -> bookingService.add(
+                booker.getId(), newBookingDto.toBuilder().start(LocalDateTime.now().minusDays(2)).build()));
+        assertThrows(IncorrectItemValidException.class, () -> bookingService.add(
+                booker.getId(), newBookingDto.toBuilder().start(LocalDateTime.now().plusDays(2))
+                        .end(LocalDateTime.now().plusDays(1)).build()));
+        assertThrows(IncorrectUserException.class, () -> bookingService.add(10L, newBookingDto));
+        assertThrows(IncorrectItemIdException.class, () -> bookingService.add(
+                booker.getId(), newBookingDto.toBuilder().itemId(5L).build()));
+        itemService.upgradeItem(owner.getId(), itemDto.toBuilder().available(false).build(), 1L);
+        assertThrows(IncorrectItemValidException.class, () -> bookingService.add(booker.getId(), newBookingDto));
     }
 
     @Test
