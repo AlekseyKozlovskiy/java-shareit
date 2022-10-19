@@ -1,81 +1,101 @@
 package ru.practicum.shareit.booking;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.ShareItTests;
-import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BookingServiceTest extends ShareItTests {
 
-    private final BookingRepository bookingRepository;
-
     private final BookingService bookingService;
-
-    private final ItemService itemService;
+    private final BookingRepository repository;
     private final UserService userService;
-    private User user = new User(1L, "Simple User", "user@mail.ru");
-    private User user2 = new User(2L, "Another User", "test@mail.ru");
-    private Item item = new Item(1L, "Unit", "Super unit", true, user, null);
-    private Booking booking = new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(2),
-            item, user2, BookingStatus.WAITING, false, false);
+    private final ItemService itemService;
 
     @Autowired
-    public BookingServiceTest(BookingRepository bookingRepository,
-                              BookingService bookingService,
-                              ItemService itemService,
-                              UserService userService) {
-        this.bookingRepository = bookingRepository;
+    BookingServiceTest(BookingService bookingService, BookingRepository repository, UserService userService,
+                       ItemService itemService) {
         this.bookingService = bookingService;
-        this.itemService = itemService;
+        this.repository = repository;
         this.userService = userService;
-        userService.add(UserMapper.toUserDto(user));
-        userService.add(UserMapper.toUserDto(user2));
-        itemService.addNewItem(1L, ItemMapper.toItemDto(item));
-        bookingRepository.save(booking);
+        this.itemService = itemService;
+    }
+
+    private BookingDto newBookingDto;
+    private UserDto owner;
+    private UserDto booker;
+    private ItemDto itemDto;
+
+    @BeforeEach
+    void setUp() {
+
+        owner = userService.add(UserDto.builder().name("user1").email("test1@test1.com").build());
+        booker = userService.add(UserDto.builder().name("user2").email("user2@test1.com").build());
+        itemDto = itemService.addNewItem(owner.getId(),
+                ItemDto.builder().id(1L).name("item1").description("item1").available(true).build());
+        newBookingDto = BookingDto.builder()
+                .id(1L)
+                .itemId(1L)
+                .start(LocalDateTime.now().plusMinutes(1))
+                .end(LocalDateTime.now().plusMinutes(2))
+                .booker(booker)
+                .status(BookingStatus.WAITING)
+                .approved(false)
+                .item(itemDto)
+                .canceled(false)
+                .build();
     }
 
     @Test
     void add() {
-        bookingRepository.save(booking);
-        List<Booking> all = bookingRepository.findAll();
-        System.out.println(all.size());
-//        BookingDto externalBookingDto = BookingDto.builder()
-//                .start(LocalDateTime.now().plusMinutes(1))
-//                .end(LocalDateTime.now().plusDays(2))
-//                .booker(UserMapper.toUserDto(user))
-//                .item(ItemMapper.toItemDto(item))
-//                .itemId(1L)
-//                .build();
-//        System.out.println(externalBookingDto);
-//        Booking booking1 = BookingMapper.toNewBooking(externalBookingDto);
-//        booking1.setId(1L);
-//        System.out.println(booking1);
-//        assertEquals(booking1, bookingRepository.findById(booking1.getId()).orElse(null));
+        bookingService.add(booker.getId(), newBookingDto);
+        assertNotNull(repository.findById(newBookingDto.getId()).orElseThrow());
+        assertEquals(repository.findById(newBookingDto.getId()).orElseThrow().getEnd(), newBookingDto.getEnd());
     }
 
     @Test
     void upgrade() {
+        BookingDto bookingDto1 = bookingService.add(booker.getId(), newBookingDto);
+        BookingDto updateBookingDto = bookingService.upgrade(owner.getId(), bookingDto1.getId(), true);
+        assertEquals(BookingStatus.APPROVED, updateBookingDto.getStatus());
     }
 
     @Test
     void get() {
+        BookingDto bookingDto1 = bookingService.add(booker.getId(), newBookingDto);
+        BookingDto bookingDto2 = bookingService.get(owner.getId(), newBookingDto.getId(), 1L, 10L);
+        assertEquals(bookingDto1, bookingDto2);
     }
 
     @Test
     void getAll() {
+        BookingDto bookingDto1 = bookingService.add(booker.getId(), newBookingDto);
+        BookingDto bookingDto2 = bookingService.add(booker.getId(), newBookingDto);
+        List<BookingDto> all = bookingService.getAll(booker.getId(), "ALL", PageRequest.ofSize(10));
+        assertEquals(2, all.size());
     }
 
     @Test
     void getAllOfOwner() {
+        BookingDto bookingDto1 = bookingService.add(booker.getId(), newBookingDto);
+        BookingDto bookingDto2 = bookingService.add(booker.getId(), newBookingDto);
+        List<BookingDto> all = bookingService.getAllOfOwner(1L, "ALL", PageRequest.ofSize(10));
+        assertEquals(2, all.size());
     }
 }
