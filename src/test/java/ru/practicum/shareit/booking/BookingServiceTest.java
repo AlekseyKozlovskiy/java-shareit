@@ -10,7 +10,10 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.exceptions.IncorrectRequest;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.item.LastBooking;
+import ru.practicum.shareit.item.NextBooking;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -134,9 +137,38 @@ class BookingServiceTest extends ShareItTests {
 
     @Test
     void getAllFromUserByRejectedState() {
-        final BookingDto bookingDto1 = bookingService.add(booker.getId(), newBookingDto);
-        final BookingDto updateBookingDto1 = bookingService.upgrade(owner.getId(), bookingDto1.getId(), false);
+        BookingDto bookingDto1 = bookingService.add(booker.getId(), newBookingDto);
+        BookingDto updateBookingDto1 = bookingService.upgrade(owner.getId(), bookingDto1.getId(), false);
         assertEquals(1, bookingService.getAll(booker.getId(), "REJECTED", PageRequest.ofSize(10)).size());
+    }
+
+    @Test
+    void getAllOfOwnerWithDifferentState() {
+        BookingDto bookingDto1 = bookingService.add(booker.getId(), newBookingDto);
+        assertEquals(List.of(bookingDto1), bookingService.getAllOfOwner(owner.getId(), "ALL", PageRequest.ofSize(10)));
+        bookingDto1.setStatus(BookingStatus.WAITING);
+        assertEquals(List.of(bookingDto1), bookingService.getAllOfOwner(owner.getId(), "WAITING", PageRequest.ofSize(10)));
+        bookingService.upgrade(owner.getId(), bookingDto1.getId(), false);
+        assertEquals(1, bookingService.getAllOfOwner(owner.getId(), "REJECTED", PageRequest.ofSize(10)).size());
+    }
+
+    @Test
+    void lastAndNextBookingTest() throws InterruptedException {
+        LastBooking lastBooking = bookingService.lastBooking(1L);
+        NextBooking nextBooking = bookingService.nextBooking(1L);
+        assertEquals(lastBooking, bookingService.lastBooking(1L));
+        assertEquals(nextBooking, bookingService.nextBooking(1L));
+
+        newBookingDto.setStart(LocalDateTime.now().minusDays(1).withNano(0));
+        newBookingDto.setEnd(LocalDateTime.now().minusHours(1).withNano(0));
+        repository.save(BookingMapper.toNewBooking(newBookingDto));
+        assertEquals(1, bookingService.lastBooking(1L).getId());
+
+        newBookingDto.setStart(LocalDateTime.now().plusDays(1).withNano(0));
+        newBookingDto.setEnd(LocalDateTime.now().plusDays(2).withNano(0));
+        repository.save(BookingMapper.toNewBooking(newBookingDto));
+        assertEquals(2, bookingService.nextBooking(1L).getId());
+
     }
 
 
@@ -176,5 +208,15 @@ class BookingServiceTest extends ShareItTests {
                 .canceled(false)
                 .build();
         assertThrows(IncorrectRequest.class, () -> bookingService.add(owner.getId(), newBookingDto));
+    }
+
+    @Test
+    void getAllFromUserByCurrentState() {
+        User user = new User(2L, "name", "email@email.com");
+        newBookingDto.setStart(LocalDateTime.now().minusDays(1).withNano(0));
+        newBookingDto.setEnd(LocalDateTime.now().plusDays(1).withNano(0));
+        repository.save(BookingMapper.toNewBooking(newBookingDto));
+        assertNotNull(bookingService.get(user.getId(), 1L, 1L, 10L));
+        assertEquals(1, bookingService.getAll(user.getId(), "CURRENT", PageRequest.ofSize(10)).size());
     }
 }
