@@ -84,10 +84,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<ItemRequestDto> i = ItemRequestMapper.itemRequestDtoList(itemRequestRepository.findAll());
         List<ItemRequestDto> test = new ArrayList<>();
         for (ItemRequestDto itemRequest : i) {
+            String zapros = itemRequest.getDescription().replaceAll(" ", "").toLowerCase();
             List<ItemDto> list = new ArrayList<>();
             for (ItemDto item : all) {
                 String stroka = item.getName().replaceAll(" ", "").toLowerCase().substring(0, 3);
-                String zapros = itemRequest.getDescription().replaceAll(" ", "").toLowerCase();
                 if (zapros.contains(stroka)) {
                     list.add(item);
                     item.setRequestId(itemRequest.getId());
@@ -112,13 +112,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         itemRequestValidation.isItemRequestExists(itemRequestId);
         ItemRequestDto byId = ItemRequestMapper.toItemRequestDto(itemRequestRepository.getById(itemRequestId));
         List<ItemDto> all = ItemMapper.toItemDtoList(itemRepository.findAll());
-        for (ItemDto item : all) {
+        for (ItemDto itemDto : all) {
             List<ItemDto> list = new ArrayList<>();
-            String stroka = item.getName().replaceAll(" ", "").toLowerCase().substring(0, 3);
+            String stroka = itemDto.getName().replaceAll(" ", "").toLowerCase().substring(0, 3);
             String zapros = byId.getDescription().replaceAll(" ", "").toLowerCase();
             if (zapros.contains(stroka)) {
-                list.add(item);
-                item.setRequestId(byId.getId());
+                list.add(itemDto);
+                itemDto.setRequestId(byId.getId());
             }
             byId.setItems(list);
         }
