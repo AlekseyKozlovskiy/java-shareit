@@ -6,6 +6,7 @@ import ru.practicum.shareit.user.UserMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Component
 public class ItemRequestMapper {
     public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
