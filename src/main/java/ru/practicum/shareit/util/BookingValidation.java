@@ -30,14 +30,14 @@ public class BookingValidation {
         if (bookingDto.getEnd().isBefore(LocalDateTime.now())
                 || bookingDto.getStart().isBefore(LocalDateTime.now())
                 || bookingDto.getEnd().isBefore(bookingDto.getStart())) {
-            throw new IncorrectBookingTimeException();
+            throw new ValidationException("wrong time");
         }
         return true;
     }
 
     public Boolean isBookingIdValid(Long bookingId) {
         if (!bookingRepository.findAll().stream().anyMatch(booking -> booking.getId().equals(bookingId))) {
-            throw new IncorrectBookingIdException();
+            throw new IncorrectRequest("Неверный ID Booking");
         }
         return true;
     }
@@ -46,21 +46,21 @@ public class BookingValidation {
         System.out.println(bookingRepository.getById(bookingId).getItem().getOwner().getId());
         if (!bookingRepository.getById(bookingId).getItem().getOwner().getId().equals(userId)
                 && !bookingRepository.getById(bookingId).getBooker().getId().equals(userId)) {
-            throw new IncorrectChangeStatusBookerException();
+            throw new IncorrectRequest("Только владелец может поменять статус");
         }
         return true;
     }
 
     public Boolean isBookingApproved(Long bookingId) {
         if (bookingRepository.getById(bookingId).getApproved()) {
-            throw new IncorrectItemApprovedException();
+            throw new ValidationException("Вещь уже подтверждена для бронирования");
         }
         return true;
     }
 
     public Boolean isOwner(Long bookingId, Long userId) {
         if (!bookingRepository.getById(bookingId).getItem().getOwner().getId().equals(userId)) {
-            throw new IncorrectOwnerBookingException();
+            throw new IncorrectRequest("Только владелец может поменять статус");
         }
         return true;
     }
@@ -68,41 +68,35 @@ public class BookingValidation {
 
     public Boolean tryToBookingSelfItem(Long itemId, Long userId) {
         if (itemRepository.getById(itemId).getOwner().getId().equals(userId)) {
-            throw new TryingToBookingSelfItemException();
+            throw new IncorrectRequest("ОШИБКА");
         }
         return true;
     }
 
     public LastBooking lastBooking(Long itemId) {
-        List<Booking> byItemId = bookingRepository.findByItemId(itemId);
+        Booking booking1 = bookingRepository.getFirstByItemIdOrderByStartAsc(itemId);
         LastBooking lastBooking = new LastBooking();
-        Booking booking = null;
-        try {
-            booking = byItemId.get(0);
-        } catch (IndexOutOfBoundsException e) {
+        if (booking1 == null) {
             lastBooking.setId(null);
             lastBooking.setBookerId(null);
             return lastBooking;
         }
-        lastBooking.setId(booking.getId());
-        lastBooking.setBookerId(booking.getBooker().getId());
+        lastBooking.setId(booking1.getId());
+        lastBooking.setBookerId(booking1.getBooker().getId());
         return lastBooking;
     }
 
     public NextBooking nextBooking(Long itemId) {
-        List<Booking> byItemId = bookingRepository.findByItemId(itemId);
-
+        Booking booking1 = bookingRepository.getFirstByItemIdOrderByEndDesc(itemId);
         NextBooking nextBooking = new NextBooking();
-        Booking booking = null;
-        try {
-            booking = byItemId.get(1);
-        } catch (IndexOutOfBoundsException e) {
+
+        if (booking1 == null) {
             nextBooking.setId(null);
             nextBooking.setBookerId(null);
             return nextBooking;
         }
-        nextBooking.setId(booking.getId());
-        nextBooking.setBookerId(booking.getBooker().getId());
+        nextBooking.setId(booking1.getId());
+        nextBooking.setBookerId(booking1.getBooker().getId());
         return nextBooking;
     }
 
@@ -115,11 +109,11 @@ public class BookingValidation {
         if (commentDtoNew.getText().isBlank()
                 || !bookingRepository.getById(itemId).getBooker().getId().equals(userId)
                 || !bookingRepository.getById(itemId).getItem().getId().equals(itemId)) {
-            throw new IncorrectAddCommentException();
+            throw new ValidationException("Вещь не была в аренде");
         }
         for (Booking booking : bookingList) {
             if (booking.getStatus().equals(BookingStatus.REJECTED)) {
-                throw new IncorrectAddCommentException();
+                throw new ValidationException("Вещь не была в аренде");
             }
         }
     }
@@ -127,7 +121,7 @@ public class BookingValidation {
     public boolean isStateCorrect(String state) {
         boolean b = Arrays.stream(State.values()).anyMatch(s -> s.toString().equals(state));
         if (!b) {
-            throw new IncorrectStateException();
+            throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
         return b;
 

@@ -8,9 +8,11 @@ import ru.practicum.shareit.comments.Comment;
 import ru.practicum.shareit.comments.CommentDtoNew;
 import ru.practicum.shareit.comments.CommentMapper;
 import ru.practicum.shareit.comments.CommentRepository;
-import ru.practicum.shareit.exceptions.IncorrectOwnerException;
+import ru.practicum.shareit.exceptions.IncorrectRequest;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.requests.ItemRequest;
+import ru.practicum.shareit.requests.ItemRequestRepository;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.util.BookingValidation;
@@ -34,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingValidation bookingValidation;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Transactional
     @Override
@@ -41,7 +44,19 @@ public class ItemServiceImpl implements ItemService {
         itemDto.setOwner(UserMapper.toUserDto(userRepository.getById(userId)));
         Item item = ItemMapper.toNewItem(itemDto);
         itemValidation.chek(userId, itemDto);
-        return ItemMapper.toItemDto(itemRepository.save(item));
+
+        List<ItemRequest> all = itemRequestRepository.findAll();
+        for (ItemRequest itemRequest : all) {
+            String stroka = itemDto.getName().replaceAll(" ", "").toLowerCase().substring(0, 3);
+            String zapros = itemRequest.getDescription().replaceAll(" ", "").toLowerCase();
+            if (zapros.contains(stroka)) {
+                itemDto.setRequestId(itemRequest.getId());
+            }
+        }
+        itemRepository.save(item);
+        itemDto.setId(item.getId());
+
+        return itemDto;
     }
 
     @Override
@@ -55,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
                 .equals(userId)).collect(Collectors.toList());
         if (collect.stream().anyMatch(item1 -> item1.getId().equals(itemId))) {
             upgrade(itemDto, item, itemId);
-        } else throw new IncorrectOwnerException();
+        } else throw new IncorrectRequest("У пользователя нет такой вещи");
 
         itemRepository.save(item);
         return ItemMapper.toItemDto(item);
@@ -89,29 +104,15 @@ public class ItemServiceImpl implements ItemService {
                 bookings.sort(Comparator.comparing(Booking::getEnd));
                 for (Booking booking : bookings) {
                     if (booking.getEnd().isBefore(LocalDateTime.now())) {
-                        item.setLastBooking(lastBooking(booking));
+                        item.setLastBooking(bookingValidation.lastBooking(item.getId()));
                     }
                     if (booking.getStart().isAfter(LocalDateTime.now())) {
-                        item.setNextBooking(nextBooking(booking));
+                        item.setNextBooking(bookingValidation.nextBooking(item.getId()));
                     }
                 }
             }
             return itemDtos;
-        } else throw new IncorrectOwnerException();
-    }
-
-    public LastBooking lastBooking(Booking booking) {
-        LastBooking lastBooking = new LastBooking();
-        lastBooking.setId(booking.getId());
-        lastBooking.setBookerId(booking.getBooker().getId());
-        return lastBooking;
-    }
-
-    public NextBooking nextBooking(Booking booking) {
-        NextBooking nextBooking = new NextBooking();
-        nextBooking.setId(booking.getId());
-        nextBooking.setBookerId(booking.getBooker().getId());
-        return nextBooking;
+        } else throw new IncorrectRequest("У пользователя нет такой вещи");
     }
 
     @Override

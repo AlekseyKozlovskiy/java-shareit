@@ -1,16 +1,19 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingDtoCreate;
-import ru.practicum.shareit.exceptions.IncorrectApprovedParameterException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.LastBooking;
+import ru.practicum.shareit.item.NextBooking;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.util.BookingValidation;
 import ru.practicum.shareit.util.ItemValidation;
+import ru.practicum.shareit.util.ParamValidation;
 import ru.practicum.shareit.util.UserValidation;
 
 import javax.transaction.Transactional;
@@ -29,7 +32,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingDtoCreate add(Long userId, BookingDto bookingDto) {
+    public BookingDto add(Long userId, BookingDto bookingDto) {
         userValidation.isUserRegister(userId);
         itemValidation.isItemAvailable(bookingDto.getItemId());
         bookingValidation.isBookingValid(bookingDto);
@@ -38,7 +41,7 @@ public class BookingServiceImpl implements BookingService {
         bookingDto.setItem(ItemMapper.toItemDto(itemRepository.getById(bookingDto.getItemId())));
         bookingDto.setStatus(BookingStatus.WAITING);
         Booking booking = BookingMapper.toNewBooking(bookingDto);
-        return BookingMapper.toBookingDtoCreate(bookingRepository.save(booking));
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
@@ -58,7 +61,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         if (bookingStatus == null) {
-            throw new IncorrectApprovedParameterException();
+            throw new ValidationException("Не указан параметр approved");
         }
         bookingRepository.save(booking);
 
@@ -67,21 +70,27 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto get(Long userId, Long bookingId) {
+    public BookingDto get(Long userId, Long bookingId, Long from, Long size) {
         userValidation.isUserRegister(userId);
         bookingValidation.isBookingIdValid(bookingId);
         bookingValidation.isBookingIdAndUserIdMatches(bookingId, userId);
+        if (from == null || size == null) {
+            return BookingMapper.toBookingDto(bookingRepository.getById(bookingId));
+        } else {
+            ParamValidation.chekParam(from, size);
+        }
+
         return BookingMapper.toBookingDto(bookingRepository.getById(bookingId));
     }
 
     @Override
-    public List<BookingDto> getAll(Long userId, String state) {
+    public List<BookingDto> getAll(Long userId, String state, PageRequest pageRequest) {
         userValidation.isUserRegister(userId);
         bookingValidation.isStateCorrect(state);
+
         if (state.equals(State.FUTURE.toString())) {
             List<Booking> list = bookingRepository
                     .getAllByBookerIdAndStartIsAfterOrderByIdDesc(userId, LocalDateTime.now());
-
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.WAITING.toString())) {
@@ -97,29 +106,28 @@ public class BookingServiceImpl implements BookingService {
                     .getAllByBookerIdAndEndIsAfterAndStartIsBefore(userId, LocalDateTime.now(), LocalDateTime.now());
             return BookingMapper.toBookingDtoList(list);
         }
-
-
         if (state.equals(State.PAST.toString())) {
             List<Booking> list = bookingRepository
                     .getAllByBookerIdAndEndIsBeforeOrderByIdDesc(userId, LocalDateTime.now());
             return BookingMapper.toBookingDtoList(list);
         }
-        List<Booking> list = bookingRepository.getAllByBookerId(userId);
-        list.sort((b, b1) -> (int) (b1.getId() - b.getId()));
+        List<Booking> list = bookingRepository.getAllByBookerIdOrderByIdDesc(userId, pageRequest);
 
         return BookingMapper.toBookingDtoList(list);
     }
 
+
     @Override
-    public List<BookingDto> getAllOfOwner(Long userId, String state) {
+    public List<BookingDto> getAllOfOwner(Long userId, String state, PageRequest pageRequeste) {
         userValidation.isUserRegister(userId);
         bookingValidation.isStateCorrect(state);
+
         if (state.equals(State.WAITING.toString())) {
-            List<Booking> list = bookingRepository.getAllOfOwnerAndStatus(userId, BookingStatus.WAITING.toString());
+            List<Booking> list = bookingRepository.getAllOfOwnerAndStatus(userId, BookingStatus.WAITING.toString(), pageRequeste);
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.REJECTED.toString())) {
-            List<Booking> list = bookingRepository.getAllOfOwnerAndStatus(userId, BookingStatus.REJECTED.toString());
+            List<Booking> list = bookingRepository.getAllOfOwnerAndStatus(userId, BookingStatus.REJECTED.toString(), pageRequeste);
             return BookingMapper.toBookingDtoList(list);
         }
         if (state.equals(State.CURRENT.toString())) {
@@ -131,7 +139,36 @@ public class BookingServiceImpl implements BookingService {
             return BookingMapper.toBookingDtoList(list);
         }
 
-        List<Booking> list = bookingRepository.getAllOfOwner(userId);
+        List<Booking> list = bookingRepository.getAllOfOwner(userId, pageRequeste);
         return BookingMapper.toBookingDtoList(list);
+    }
+
+    @Override
+    public LastBooking lastBooking(Long itemId) {
+        Booking booking1 = bookingRepository.getFirstByItemIdOrderByStartAsc(itemId);
+        LastBooking lastBooking = new LastBooking();
+        if (booking1 == null) {
+            lastBooking.setId(null);
+            lastBooking.setBookerId(null);
+            return lastBooking;
+        }
+        lastBooking.setId(booking1.getId());
+        lastBooking.setBookerId(booking1.getBooker().getId());
+        return lastBooking;
+    }
+
+    @Override
+    public NextBooking nextBooking(Long itemId) {
+        Booking booking1 = bookingRepository.getFirstByItemIdOrderByEndDesc(itemId);
+        NextBooking nextBooking = new NextBooking();
+
+        if (booking1 == null) {
+            nextBooking.setId(null);
+            nextBooking.setBookerId(null);
+            return nextBooking;
+        }
+        nextBooking.setId(booking1.getId());
+        nextBooking.setBookerId(booking1.getBooker().getId());
+        return nextBooking;
     }
 }

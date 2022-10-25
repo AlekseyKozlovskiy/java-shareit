@@ -8,8 +8,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Setter
 public class BookingDto {
@@ -25,5 +26,24 @@ public class BookingDto {
     private ItemDto item;
     private Boolean canceled;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BookingDto that = (BookingDto) o;
+        return Objects.equals(id, that.id)
+                && Objects.equals(itemId, that.itemId)
+                && Objects.equals(start, that.start)
+                && Objects.equals(end, that.end)
+                && Objects.equals(booker, that.booker)
+                && status == that.status
+                && Objects.equals(approved, that.approved)
+                && Objects.equals(item, that.item)
+                && Objects.equals(canceled, that.canceled);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, itemId, start, end, booker, status, approved, item, canceled);
+    }
 }

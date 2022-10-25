@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 
+import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
@@ -14,5 +15,5 @@ public interface UserService {
 
     void delete(Long id);
 
-    List<UserDto> getAll();
+    List<UserDto> getAll(PageRequest pageRequest);
 }

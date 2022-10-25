@@ -9,15 +9,6 @@ import java.util.List;
 
 @Component
 public class CommentMapper {
-    public static CommentDto toCommentDto(Comment comment) {
-        return CommentDto.builder()
-                .id(comment.getId())
-                .text(comment.getText())
-                .created(comment.getCreated())
-                .item(ItemMapper.toItemDto(comment.getItem()))
-                .user(UserMapper.toUserDto(comment.getUser()))
-                .build();
-    }
 
     public static Comment toNewComment(CommentDtoNew commentDtoNew) {
         Comment comment = new Comment();

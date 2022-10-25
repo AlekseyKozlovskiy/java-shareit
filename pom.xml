@@ -193,22 +193,22 @@
                                             <limit>
                                                 <counter>LINE</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.9</minimum>
+                                                <minimum>0.6</minimum>
                                             </limit>
                                             <limit>
                                                 <counter>BRANCH</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.9</minimum>
+                                                <minimum>0.6</minimum>
                                             </limit>
                                             <limit>
                                                 <counter>COMPLEXITY</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.9</minimum>
+                                                <minimum>0.6</minimum>
                                             </limit>
                                             <limit>
                                                 <counter>METHOD</counter>
                                                 <value>COVEREDRATIO</value>
-                                                <minimum>0.9</minimum>
+                                                <minimum>0.6</minimum>
                                             </limit>
                                             <limit>
                                                 <counter>CLASS</counter>
@@ -222,7 +222,7 @@
                         </execution>
                         <execution>
                             <id>jacoco-site</id>
-                            <phase>install</phase>
+                            <phase>test</phase>
                             <goals>
                                 <goal>report</goal>
                             </goals>
