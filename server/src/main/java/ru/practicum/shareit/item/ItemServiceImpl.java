@@ -97,7 +97,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getAll(Long userId) {
         System.out.println("2222222222");
         if (userValidation.isUserRegister(userId)) {
-            List<Item> collect = itemRepository.findByOwnerId(userId);
+            List<Item> collect = itemRepository.findByOwnerIdOrderById(userId);
             List<ItemDto> itemDtos = ItemMapper.toItemDtoList(collect);
             for (ItemDto item : itemDtos) {
                 List<Booking> bookings = bookingRepository.findByItemId(item.getId());
