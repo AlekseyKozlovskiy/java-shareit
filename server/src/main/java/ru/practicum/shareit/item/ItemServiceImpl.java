@@ -112,7 +112,6 @@ public class ItemServiceImpl implements ItemService {
                     }
                 }
             }
-            Collections.reverse(itemDtos);
             return itemDtos;
         } else throw new IncorrectRequest("У пользователя нет такой вещи");
     }
