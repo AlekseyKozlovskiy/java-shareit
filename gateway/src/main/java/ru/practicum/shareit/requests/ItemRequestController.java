@@ -29,8 +29,8 @@ public class ItemRequestController {
     @GetMapping("/all")
     ResponseEntity<Object> getAll(@Valid
                                   @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
-                                  @RequestParam(required = false) Long from,
-                                  @RequestParam(required = false) Long size) {
+                                  @RequestParam(required = false, defaultValue = "0") Long from,
+                                  @RequestParam(required = false, defaultValue = "10") Long size) {
         return itemRequestClient.getAll(userId, from, size);
     }
 
