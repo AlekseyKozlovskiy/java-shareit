@@ -26,15 +26,15 @@ public class ItemRequestClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> add(long userId, ItemRequestDto itemRequestDto) {
+    public ResponseEntity<Object> add(Long userId, ItemRequestDto itemRequestDto) {
         return post("", userId, itemRequestDto);
     }
 
-    public ResponseEntity<Object> get(long userId) {
+    public ResponseEntity<Object> get(Long userId) {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> getAll(long userId, Long from, Long size) {
+    public ResponseEntity<Object> getAll(Long userId, Long from, Long size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
@@ -42,7 +42,7 @@ public class ItemRequestClient extends BaseClient {
         return get("/all?from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getById(long userId, long requestId) {
+    public ResponseEntity<Object> getById(Long userId, Long requestId) {
         return get("/" + requestId, userId);
     }
 }

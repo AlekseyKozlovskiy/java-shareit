@@ -13,5 +13,4 @@ public interface ItemRequestService {
 
     ItemRequestDto getById(Long userId, Long itemRequestId);
 
-//    void delete(Long userId, Long requestId);
 }

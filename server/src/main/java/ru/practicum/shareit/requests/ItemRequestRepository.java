@@ -10,7 +10,6 @@ import java.util.List;
 public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
     List<ItemRequest> getAllByRequester_Id(Long userId);
 
-    //    List<ItemRequest> getAllBy_Id(Long userId);
     @Query(value = "select * from SHAREIT.ITEM_REQUESTS as ir " +
             "inner join SHAREIT.ITEMS I on ir.ID = I.REQUEST_ID " +
             "where I.ID =?1 ORDER BY ir.ID DESC ", nativeQuery = true)
