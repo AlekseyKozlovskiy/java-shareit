@@ -3,17 +3,13 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.exceptions.ValidationException;
-import ru.practicum.shareit.item.LastBooking;
-import ru.practicum.shareit.item.NextBooking;
-import ru.practicum.shareit.util.BookingValidation;
-import ru.practicum.shareit.util.ItemValidation;
-import ru.practicum.shareit.util.ParamValidation;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.util.BookingValidation;
+import ru.practicum.shareit.util.ItemValidation;
 import ru.practicum.shareit.util.UserValidation;
 
 import javax.transaction.Transactional;
@@ -35,7 +31,6 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto add(Long userId, BookingDto bookingDto) {
         userValidation.isUserRegister(userId);
         itemValidation.isItemAvailable(bookingDto.getItemId());
-        bookingValidation.isBookingValid(bookingDto);
         bookingValidation.tryToBookingSelfItem(bookingDto.getItemId(), userId);
         bookingDto.setBooker(UserMapper.toUserDto(userRepository.getById(userId)));
         bookingDto.setItem(ItemMapper.toItemDto(itemRepository.getById(bookingDto.getItemId())));
@@ -60,9 +55,6 @@ public class BookingServiceImpl implements BookingService {
                 booking.setApproved(false);
             }
         }
-        if (bookingStatus == null) {
-            throw new ValidationException("Не указан параметр approved");
-        }
         bookingRepository.save(booking);
 
         return BookingMapper.toBookingDto(booking);
@@ -74,20 +66,12 @@ public class BookingServiceImpl implements BookingService {
         userValidation.isUserRegister(userId);
         bookingValidation.isBookingIdValid(bookingId);
         bookingValidation.isBookingIdAndUserIdMatches(bookingId, userId);
-        if (from == null || size == null) {
-            return BookingMapper.toBookingDto(bookingRepository.getById(bookingId));
-        } else {
-            ParamValidation.chekParam(from, size);
-        }
-
         return BookingMapper.toBookingDto(bookingRepository.getById(bookingId));
     }
 
     @Override
     public List<BookingDto> getAll(Long userId, String state, PageRequest pageRequest) {
         userValidation.isUserRegister(userId);
-        bookingValidation.isStateCorrect(state);
-
         if (state.equals(State.FUTURE.toString())) {
             List<Booking> list = bookingRepository
                     .getAllByBookerIdAndStartIsAfterOrderByIdDesc(userId, LocalDateTime.now());
@@ -120,7 +104,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllOfOwner(Long userId, String state, PageRequest pageRequeste) {
         userValidation.isUserRegister(userId);
-        bookingValidation.isStateCorrect(state);
 
         if (state.equals(State.WAITING.toString())) {
             List<Booking> list = bookingRepository.getAllOfOwnerAndStatus(userId, BookingStatus.WAITING.toString(), pageRequeste);
@@ -141,34 +124,5 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> list = bookingRepository.getAllOfOwner(userId, pageRequeste);
         return BookingMapper.toBookingDtoList(list);
-    }
-
-    @Override
-    public LastBooking lastBooking(Long itemId) {
-        Booking booking1 = bookingRepository.getFirstByItemIdOrderByStartAsc(itemId);
-        LastBooking lastBooking = new LastBooking();
-        if (booking1 == null) {
-            lastBooking.setId(null);
-            lastBooking.setBookerId(null);
-            return lastBooking;
-        }
-        lastBooking.setId(booking1.getId());
-        lastBooking.setBookerId(booking1.getBooker().getId());
-        return lastBooking;
-    }
-
-    @Override
-    public NextBooking nextBooking(Long itemId) {
-        Booking booking1 = bookingRepository.getFirstByItemIdOrderByEndDesc(itemId);
-        NextBooking nextBooking = new NextBooking();
-
-        if (booking1 == null) {
-            nextBooking.setId(null);
-            nextBooking.setBookerId(null);
-            return nextBooking;
-        }
-        nextBooking.setId(booking1.getId());
-        nextBooking.setBookerId(booking1.getBooker().getId());
-        return nextBooking;
     }
 }

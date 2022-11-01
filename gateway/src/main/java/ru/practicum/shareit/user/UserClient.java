@@ -44,7 +44,6 @@ public class UserClient extends BaseClient {
                 "from", from,
                 "size", size
         );
-        System.out.println("мапа с параметрами в UserClients -> " + parameters);
         return get("?from={from}&size={size}", parameters);
     }
 

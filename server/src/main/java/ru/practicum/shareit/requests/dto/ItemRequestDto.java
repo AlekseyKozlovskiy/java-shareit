@@ -14,6 +14,7 @@ import java.util.List;
 @Valid
 public class ItemRequestDto {
     private Long id;
+    @NonNull
     private String description;
     private UserDto requestor;
     private LocalDateTime created;

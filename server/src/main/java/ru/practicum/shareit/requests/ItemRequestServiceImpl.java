@@ -7,7 +7,6 @@ import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
-import ru.practicum.shareit.util.ParamValidation;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.util.ItemRequestValidation;
@@ -22,7 +21,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
-    //    private final Ite
     private final UserValidation userValidation;
     private final UserRepository userRepository;
     private final ItemRequestValidation itemRequestValidation;
@@ -31,7 +29,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public ItemRequestDto add(Long userId, ItemRequestDto itemRequestDto) {
         userValidation.isUserRegister(userId);
-        itemRequestValidation.isDescriptionValid(itemRequestDto.getDescription());
 
         itemRequestDto.setCreated(LocalDateTime.now());
         itemRequestDto.setRequestor(UserMapper.toUserDto(userRepository.getById(userId)));
@@ -75,11 +72,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> getAll(Long userId, Long from, Long size) {
-        if (from == null || size == null) {
-            return ItemRequestMapper.itemRequestDtoList(itemRequestRepository.findAll());
-        } else {
-            ParamValidation.chekParam(from, size);
-        }
         List<ItemDto> all = ItemMapper.toItemDtoList(itemRepository.findAll());
         List<ItemRequestDto> i = ItemRequestMapper.itemRequestDtoList(itemRequestRepository.findAll());
         List<ItemRequestDto> test = new ArrayList<>();

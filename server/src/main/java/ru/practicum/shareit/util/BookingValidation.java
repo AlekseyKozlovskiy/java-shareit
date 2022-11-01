@@ -3,18 +3,15 @@ package ru.practicum.shareit.util;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.booking.State;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.comments.CommentDtoNew;
 import ru.practicum.shareit.exceptions.IncorrectRequest;
 import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.LastBooking;
 import ru.practicum.shareit.item.NextBooking;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -25,15 +22,6 @@ public class BookingValidation {
     public BookingValidation(BookingRepository bookingRepository, ItemRepository itemRepository) {
         this.bookingRepository = bookingRepository;
         this.itemRepository = itemRepository;
-    }
-
-    public Boolean isBookingValid(BookingDto bookingDto) {
-        if (bookingDto.getEnd().isBefore(LocalDateTime.now())
-                || bookingDto.getStart().isBefore(LocalDateTime.now())
-                || bookingDto.getEnd().isBefore(bookingDto.getStart())) {
-            throw new ValidationException("wrong time");
-        }
-        return true;
     }
 
     public Boolean isBookingIdValid(Long bookingId) {
@@ -118,15 +106,4 @@ public class BookingValidation {
             }
         }
     }
-
-    public boolean isStateCorrect(String state) {
-        boolean b = Arrays.stream(State.values()).anyMatch(s -> s.toString().equals(state));
-        if (!b) {
-            throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
-        }
-        return b;
-
-
-    }
-
 }

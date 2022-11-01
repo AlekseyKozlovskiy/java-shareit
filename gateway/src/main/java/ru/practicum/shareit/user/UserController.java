@@ -19,7 +19,6 @@ import javax.validation.constraints.PositiveOrZero;
 public class UserController {
     private final UserClient userClient;
 
-
     @PostMapping
     ResponseEntity<Object> add(@Valid @RequestBody UserDto userDto) {
         log.info("GATEWAY: Add new user {}", userDto);
@@ -27,25 +26,28 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    ResponseEntity<Object> upgrade(@Valid @PathVariable("id") Long id,
+    ResponseEntity<Object> upgrade(@PathVariable("id") Long id,
                                    @RequestBody UserDto userDto) {
+        log.info("GATEWAY: Upgrade new user {}, id={}", userDto, id);
         return userClient.upgrade(id, userDto);
     }
 
     @GetMapping("/{id}")
     ResponseEntity<Object> getById(@PathVariable("id") Long userId) {
+        log.info("GATEWAY: Get user, id={}", userId);
         return userClient.getById(userId);
     }
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable("id") Long id) {
+        log.info("GATEWAY: Delete user, id={}", id);
         userClient.delete(id);
     }
 
     @GetMapping
     ResponseEntity<Object> getAll(@PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                   @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
-        System.out.println("from на контроллере gateway -> " + from);
+        log.info("GATEWAY: Get All  users");
         return userClient.getAll(from, size);
     }
 

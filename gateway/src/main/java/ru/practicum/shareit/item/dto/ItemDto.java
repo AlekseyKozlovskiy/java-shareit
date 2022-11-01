@@ -9,16 +9,23 @@ import ru.practicum.shareit.item.NextBooking;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
 @Builder(toBuilder = true)
 @Setter
 @Getter
+@Valid
 public class ItemDto {
     private Long id;
+    @NotBlank
     private String name;
+    @NotNull
     private String description;
+    @NotNull
     private Boolean available;
     private UserDto owner;
     private ItemRequestDto itemRequest;

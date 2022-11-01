@@ -1,9 +1,8 @@
 package ru.practicum.shareit.util;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.requests.ItemRequestRepository;
 import ru.practicum.shareit.exceptions.IncorrectRequest;
-import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.requests.ItemRequestRepository;
 
 @Component
 public class ItemRequestValidation {
@@ -11,13 +10,6 @@ public class ItemRequestValidation {
 
     public ItemRequestValidation(ItemRequestRepository itemRequestRepository) {
         this.itemRequestRepository = itemRequestRepository;
-    }
-
-    public void isDescriptionValid(String s) {
-
-        if (s == null) {
-            throw new ValidationException("Description is empty");
-        }
     }
 
     public void isItemRequestExists(Long itemRequestId) {

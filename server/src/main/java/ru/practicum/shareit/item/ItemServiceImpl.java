@@ -43,7 +43,6 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto addNewItem(Long userId, ItemDto itemDto) {
         itemDto.setOwner(UserMapper.toUserDto(userRepository.getById(userId)));
         Item item = ItemMapper.toNewItem(itemDto);
-        itemValidation.chek(userId, itemDto);
 
         List<ItemRequest> all = itemRequestRepository.findAll();
         for (ItemRequest itemRequest : all) {
